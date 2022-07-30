@@ -1,0 +1,1 @@
+dart pub global run index_generator -s index_generator.yaml 

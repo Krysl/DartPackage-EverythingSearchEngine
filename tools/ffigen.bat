@@ -1,0 +1,1 @@
+dart run ffigen --config ffigen.yaml --verbose all > ffigen.log

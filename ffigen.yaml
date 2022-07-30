@@ -1,0 +1,94 @@
+output: 'lib/src/ffi/everything.g.dart'
+llvm-path:
+  - 'D:\Program Files\LLVM\'
+  # Specify exact path to dylib
+  - 'D:\Program Files\LLVM\bin\libclang.dll'
+headers:
+  entry-points:
+    - 'thirdparty\include\Everything.h'
+  include-directives:
+    - '**index.h'
+    - '**/clang-c/**'
+    - 'thirdparty\include\Everything.h'
+    # - '/full/path/to/a/header.h'
+name: 'EverythingBase'
+description: 'Bindings to Everything'
+
+functions:
+  include: # 'exclude' is also available.
+    # Matches using regexp.
+    - '[a-z][a-zA-Z0-9]*'
+    - 'Everything_.*'
+  rename:
+    # Regexp groups based replacement.
+    # 'Everything_C(.*)': 'c$1'
+    # 'Everything_D(.*)': 'd$1'
+    # 'Everything_E(.*)': 'e$1'
+    # 'Everything_S(.*)': 's$1'
+    # 'Everything_G(.*)': 'g$1'
+    # 'Everything_I(.*)': 'i$1'
+    # 'Everything_Q(.*)': 'q$1'
+    # 'Everything_R(.*)': 'r$1'
+    # 'Everything_U(.*)': 'u$1'
+    'Everything_(.*)': '$1'
+    'clang_dispose': 'dispose'
+    # Removes '_' from beginning.
+    '_(.*)': '$1'
+  symbol-address:
+    # Used to expose symbol address.
+    include:
+      - setMatchPath
+  expose-typedefs:
+    include:
+      - 'setMatchPath' # Match function name.
+      # - '.*' # Do this to expose types for all function.
+    exclude: # If you only use exclude, then everything not excluded is generated.
+      - 'dispose'
+enums:
+  rename:
+    # Regexp groups based replacement.
+    'CXType_(.*)': '$1'
+  member-rename:
+    '(.*)': # Matches any enum.
+      # Removes '_' from beginning
+      # enum member name.
+      '_(.*)': '$1'
+    # Full names have higher priority.
+    'EverythingError':
+      # $1 keeps only the 1st
+      # group i.e only '(.*)'.
+      'EVERYTHING_ERROR(.*)': '$1'
+      'EVERYTHING_OK': 'EVERYTHING_OK'
+globals:
+  exclude:
+    - aGlobal
+  rename:
+    # Removes '_' from
+    # beginning of a name.
+    # '_(.*)': '$1'
+    'EVERYTHING_(.*)': '$1'
+typedefs:
+  exclude:
+    # Typedefs starting with `p` are not generated.
+    - 'p.*'
+  rename:
+    # Removes '_' from beginning of a typedef.
+    '_(.*)': '$1'
+    'EVERYTHING_(.*)': '$1'
+
+library-imports:
+  type: 'lib\src\ffi\types.dart'
+
+type-map:
+  'native-types':
+    'bool':
+      'lib': 'type'
+      'c-type': 'BOOL'
+      'dart-type': 'bool'
+
+comments:
+  style: any
+  length: full
+
+preamble: |
+  // ignore_for_file: camel_case_types, non_constant_identifier_names, constant_identifier_names, prefer_expression_function_bodies

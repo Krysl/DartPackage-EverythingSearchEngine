@@ -1,0 +1,27 @@
+index_generator:
+  # You can define the default name of the index file
+  default_name: everything
+  # You can define general filters for all indexes
+  exclude:
+    - '**.g.dart'
+    - '{_,**/_}*.dart'
+  indexes:
+    - path: lib
+      # You can define specific filters for this index
+      include:
+        # You can define specific export folders paths
+        - '**'
+      # exclude:
+      #   - 'src/exclude/*'
+      # You can define specific export dart packages in index file.
+      # exports:
+      #   - package: args/args
+      #     show:
+      #       - ArgResults
+      #     hide:
+      #       - ArgParser
+
+      # You can define the name of the index file
+      name: everything
+      # You can define the name of the library to use within the index
+      library: everything
