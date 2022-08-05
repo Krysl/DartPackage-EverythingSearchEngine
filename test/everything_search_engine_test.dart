@@ -1,12 +1,25 @@
+import 'package:everything_search_engine/everything_search_engine.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:everything_search_engine/everything_search_engine.dart';
-
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+  late Everything everything;
+  setUpAll(() {
+    everything = Everything.fromDefaultLibraryPath(isLocalTest: true);
+  });
+  group('ffi test', () {
+    test('query', () {
+      everything.runQuery(
+        '^pubspec\\.yaml\$',
+        isMatchPath: false,
+        isRegex: true,
+      );
+    });
+    test('query', () {
+      everything.runQuery(
+        'public run',
+        isMatchPath: true,
+        isRegex: false,
+      );
+    });
   });
 }

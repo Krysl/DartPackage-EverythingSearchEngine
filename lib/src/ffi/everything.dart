@@ -1,12 +1,14 @@
 // ignore_for_file: avoid_positional_boolean_parameters
 
 import 'dart:ffi' as ffi;
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as path;
 
-import '../../everything.dart';
+import '../assets.dart';
 import 'everything.g.dart';
+import 'string.dart';
 
 typedef GetFileTime = int Function(
   int dwIndex,
@@ -21,16 +23,25 @@ class Everything {
   final EverythingBase e;
 
   Everything(ffi.DynamicLibrary dynamicLibrary) : e = EverythingBase(dynamicLibrary);
-  Everything.fromLibraryPath(String libraryPath) : this(ffi.DynamicLibrary.open(libraryPath));
-  Everything.fromDefaultLibraryPath({bool isTest = false})
-      : this.fromLibraryPath(
-          path.normalize(
-            path.join(
-              isTest ? '' : 'data/flutter_assets',
-              Assets.thirdparty_dll_Everything64_dll,
-            ),
+  factory Everything.fromLibraryPath(String libraryPath) {
+    assert(File(libraryPath).existsSync(), 'file $libraryPath not exist in ${Directory.current}');
+    return Everything(ffi.DynamicLibrary.open(libraryPath));
+  }
+  factory Everything.fromDefaultLibraryPath({
+    /// use only in development of this package
+    bool isLocalTest = false,
+
+    /// use in test for common user
+    bool isTest = false,
+  }) =>
+      Everything.fromLibraryPath(
+        path.normalize(
+          path.join(
+            isLocalTest ? '' : (isTest ? 'build/flutter_assets' : 'data/flutter_assets'),
+            Assets.everything_search_engine$Everything64_dll,
           ),
-        );
+        ),
+      );
   Everything.fromLookup(ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup)
       : e = EverythingBase.fromLookup(lookup);
 
@@ -97,6 +108,9 @@ class Everything {
   int getNumFileResults() => e.GetNumFileResults();
   int getNumFolderResults() => e.GetNumFolderResults();
   int getNumResults() => e.GetNumResults();
+
+  ///  returns the total number of file results.
+  ///
   int getTotFileResults() => e.GetTotFileResults();
   int getTotFolderResults() => e.GetTotFolderResults();
   int getTotResults() => e.GetTotResults();
@@ -208,14 +222,17 @@ class Everything {
     bool isMatchWholeWord = false,
     bool isRegex = false,
     bool isMatchPath = false,
+    RequestFlags? requestFlags,
+    EverythingSort sort = EverythingSort.sizeAscending,
   }) {
     search = q;
-    requestFlags = RequestFlags(
-      fileName: true,
-      path: true,
-      size: true,
-    );
-    sort = EverythingSort.sizeAscending;
+    this.requestFlags = requestFlags ??
+        RequestFlags(
+          fileName: true,
+          path: true,
+          size: true,
+        );
+    this.sort = sort;
 
     /// search mode
     matchCase = isMatchCase;

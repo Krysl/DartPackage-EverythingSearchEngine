@@ -7,6 +7,6 @@
 class Assets {
   static const String package = 'everything_search_engine';
 
-  static const String thirdparty_dll_Everything64_dll = 'thirdparty/dll/Everything64.dll';
-  static const String everything_search_engine$thirdparty_dll_Everything64_dll = 'packages/everything_search_engine/thirdparty/dll/Everything64.dll';
+  static const String Everything64_dll = 'thirdparty/dll/Everything64.dll';
+  static const String everything_search_engine$Everything64_dll = 'packages/everything_search_engine/thirdparty/dll/Everything64.dll';
 }

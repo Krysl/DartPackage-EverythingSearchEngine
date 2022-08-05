@@ -1,11 +1,15 @@
 name: everything_search_engine
-description: A new Flutter package project.
+description: A package that wraps Everything SDK API calls using FFI to make them accessible to Dart code.
 version: 0.0.1
-homepage:
+repository: https://github.com/Krysl/DartPackage-EverythingSearchEngine
+issue_tracker: https://github.com/Krysl/DartPackage-EverythingSearchEngine/issues
+
+platforms:
+  windows:
 
 environment:
-  sdk: ">=2.17.5 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: '>=2.17.5 <3.0.0'
+  flutter: '>=1.17.0'
 
 dependencies:
   ffi: ^2.0.1
@@ -19,17 +23,18 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   ffigen: ^6.0.1
   assets_gen: ^1.2.0
+  http: ^0.13.5
+  html: ^0.15.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # To add assets to your package, add an assets section, like this:
   assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+    #   - images/a_dot_burr.jpeg
+    #   - images/a_dot_ham.jpeg
     - thirdparty/dll/Everything64.dll
   #
   # For details regarding assets in packages, see
@@ -59,3 +64,5 @@ flutter:
   # https://flutter.dev/custom-fonts/#from-packages
 assets_gen:
   enable: true
+  output: src/assets.dart
+  omit_path_levels: 2

@@ -1,6 +1,6 @@
 index_generator:
   # You can define the default name of the index file
-  default_name: everything
+  default_name: everything_search_engine
   # You can define general filters for all indexes
   exclude:
     - '**.g.dart'
@@ -22,6 +22,6 @@ index_generator:
       #       - ArgParser
 
       # You can define the name of the index file
-      name: everything
+      name: everything_search_engine
       # You can define the name of the library to use within the index
-      library: everything
+      library: everything_search_engine

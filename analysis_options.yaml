@@ -23,7 +23,7 @@ linter:
   # producing the lint.
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # public_member_api_docs: true
+    public_member_api_docs: true
     directives_ordering: true
     prefer_single_quotes: true
     prefer_relative_imports: true

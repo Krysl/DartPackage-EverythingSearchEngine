@@ -1,1 +1,0 @@
-dart run assets_gen build
