@@ -1,0 +1,6 @@
+_docs/
+ffigen.yaml
+index_generator.yaml
+*.ori.dart
+tool/
+/*.log

@@ -13,7 +13,7 @@ and the Flutter guide for
 
 <!-- TODO: Put a short description of the package here that helps potential users
 know whether this package might be useful for them. -->
-![](static-assets/favicon.png)![](assets/icon/Everything.ico)
+![](assets/icon/Everything.ico)
 
 A package that wraps [![](assets/icon/Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) API calls using [FFI](https://dart.dev/guides/libraries/c-interop) to make them accessible to Dart code.
 
