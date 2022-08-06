@@ -1,6 +1,6 @@
 name: everything_search_engine
 description: A package that wraps Everything SDK API calls using FFI to make them accessible to Dart code.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/Krysl/DartPackage-EverythingSearchEngine
 issue_tracker: https://github.com/Krysl/DartPackage-EverythingSearchEngine/issues
 
