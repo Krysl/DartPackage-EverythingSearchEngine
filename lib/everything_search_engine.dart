@@ -1,5 +1,7 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+// Copyright (c) 2022 Krysl
 
+/// Automatically generate index / everything_search_engine / library files
+/// with all the export needed for your library.
 library everything_search_engine;
 
 export 'src/assets.dart';

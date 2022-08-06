@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types, non_constant_identifier_names, constant_identifier_names, prefer_expression_function_bodies
+// ignore_for_file: camel_case_types, non_constant_identifier_names, constant_identifier_names, prefer_expression_function_bodies, public_member_api_docs
 
 // AUTO GENERATED FILE, DO NOT EDIT.
 //

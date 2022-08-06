@@ -3,19 +3,24 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'everything.g.dart';
 
+/// helper for LPCWSTR
 extension ToDartString on LPCWSTR {
+  /// get Wide String length
   int get length {
     _ensureNotNullptr('length');
     final codeUnits = cast<ffi.Uint16>();
     return _length(codeUnits);
   }
 
+  /// generate Dart String from Wide String
   String toDartString({int? length}) {
-    try {
-      _ensureNotNullptr('toDartString');
-    } on UnsupportedError catch (e) {
-      return 'null';
-    }
+    // try {
+    //   _ensureNotNullptr('toDartString');
+    // } on UnsupportedError catch (_) {
+    //   return '';
+    // }
+    if (this == ffi.nullptr) return '';
+
     final codeUnits = cast<ffi.Uint16>();
     if (length == null) {
       return _toUnknownLengthString(codeUnits);
@@ -56,7 +61,9 @@ extension ToDartString on LPCWSTR {
   }
 }
 
+/// helper for generate Wide String in C from Dart String
 extension StringToLPCWSTR on String {
+  ///generate Wide String in C from Dart String
   LPCWSTR toLPCWSTR({ffi.Allocator allocator = malloc}) {
     final units = codeUnits;
     final LPCWSTR result = allocator<WCHAR>(units.length + 1);

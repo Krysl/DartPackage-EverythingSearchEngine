@@ -4,6 +4,7 @@ index_generator:
   # You can define general filters for all indexes
   exclude:
     - '**.g.dart'
+    - '**.ori.dart'
     - '{_,**/_}*.dart'
   indexes:
     - path: lib
@@ -23,5 +24,12 @@ index_generator:
 
       # You can define the name of the index file
       name: everything_search_engine
+      # Disable/Enable the generated code disclaimer
+      # disclaimer: false
+      comments: |
+        Copyright (c) 2022 Krysl
+      docs: |
+        Automatically generate index / everything_search_engine / library files
+        with all the export needed for your library.
       # You can define the name of the library to use within the index
       library: everything_search_engine

@@ -13,14 +13,14 @@ and the Flutter guide for
 
 <!-- TODO: Put a short description of the package here that helps potential users
 know whether this package might be useful for them. -->
-![Everything.ico](assets\icon\Everything-rgb888-48x48.jpg) [^1]
-A package that wraps [![](assets\icon\Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/)[^2] API calls using [FFI](https://dart.dev/guides/libraries/c-interop) to make them accessible to Dart code.
+![](static-assets/favicon.png)![](assets/icon/Everything.ico)
 
-[^1]:"[![](assets\icon\Everything-rgb888-16x16.jpg) Everything](https://www.voidtools.com/en-us/)" is a filename search engine for Windows.
-[^2]:[![](assets\icon\Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) provides a DLL and Lib interface to Everything over IPC.
+A package that wraps [![](assets/icon/Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) API calls using [FFI](https://dart.dev/guides/libraries/c-interop) to make them accessible to Dart code.
+
+- "[![](assets/icon/Everything-rgb888-16x16.jpg) Everything](https://www.voidtools.com/en-us/)" is a filename search engine for Windows.
+- [![](assets/icon/Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) provides a DLL and Lib interface to Everything over IPC.
 ## Features
 <!-- TODO: List what your package can do. Maybe include images, gifs, or videos. -->
-
 
 ## Getting started
 <!-- TODO: List prerequisites and provide or point to information on how to
@@ -73,5 +73,5 @@ void main() {
 <!-- TODO: Tell users more about the package: where to find more information, how to 
 contribute to the package, how to file issues, what response they can expect 
 from the package authors, and more. -->
-[![](assets\icon\Everything-rgb888-16x16.jpg) SDK API document](https://www.voidtools.com/support/everything/sdk/)
-[![](assets\icon\Everything-rgb888-16x16.jpg) Query Language document](https://www.voidtools.com/support/everything/searching/)
+- [![](assets/icon/Everything-rgb888-16x16.jpg) SDK API document](https://www.voidtools.com/support/everything/sdk/)
+- [![](assets/icon/Everything-rgb888-16x16.jpg) Query Language document](https://www.voidtools.com/support/everything/searching/)
