@@ -32,7 +32,12 @@ class Doc {
     }
     if (example.isNotEmpty) {
       strbuf.writeln('## Example');
-      strbuf.writeln(example.join('\n'));
+      strbuf.writeln(
+        example.join('\n').replaceAllMapped(
+              RegExp(r'(Everything_\w+)'),
+              (m) => '${m[1]}',
+            ),
+      );
     }
     if (functionInformation.isNotEmpty) {
       strbuf.writeln('## Function Information');
@@ -42,6 +47,6 @@ class Doc {
       strbuf.writeln('## See Also');
       strbuf.writeln(seeAlso.join('\n'));
     }
-    return strbuf.toString().trimRight().split('\n').join('  \n  /// ');
+    return strbuf.toString().trimRight().split('\n').join('\n  /// ');
   }
 }

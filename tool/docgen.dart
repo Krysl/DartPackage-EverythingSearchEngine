@@ -2,7 +2,7 @@ import 'docgen/parser.dart';
 import 'docgen/patch.dart';
 
 void main(List<String> args) async {
-  await loadConfig();
+  await loadFunctionMap();
   final docsMap = await getDocsMap();
   await patchFile(docsMap);
 }

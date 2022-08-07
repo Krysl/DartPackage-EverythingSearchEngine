@@ -78,7 +78,10 @@ void _childrenMarkdown(
 bool isInLink = false;
 bool isInParagraph = false;
 bool isInBold = false;
+bool isInTable = false;
 bool ignoreHref = false;
+bool ignoreText = false;
+int col = 0;
 String toMarkdown(Node e, [StringBuffer? strbuf]) {
   strbuf ??= StringBuffer();
   if (e is Element) {
@@ -97,6 +100,7 @@ String toMarkdown(Node e, [StringBuffer? strbuf]) {
         _childrenMarkdown(e, strbuf, begin: '*', end: '*');
         break;
       case 'br':
+        if (isInTable) break;
         strbuf.write('\n');
         break;
       case 'pre':
@@ -120,17 +124,47 @@ String toMarkdown(Node e, [StringBuffer? strbuf]) {
         ignoreHref = false;
         isInLink = false;
         break;
+      case 'table':
+        ignoreText = true;
+        isInTable = true;
+        _childrenMarkdown(e, strbuf, end: '\n');
+        isInTable = false;
+        ignoreText = false;
+        break;
+      case 'tbody':
+        _childrenMarkdown(e, strbuf);
+        break;
+      case 'tr':
+        col = 0;
+        _childrenMarkdown(e, strbuf, begin: '\n| ');
+        if (col > 0) {
+          strbuf.write('\n|${' --- |' * col}');
+          col = 0;
+        }
+        break;
+      case 'th':
+        ignoreText = false;
+        _childrenMarkdown(e, strbuf, begin: ' ', end: ' |');
+        ignoreText = true;
+        col++;
+        break;
+      case 'td':
+        ignoreText = false;
+        _childrenMarkdown(e, strbuf, begin: ' ', end: ' |');
+        ignoreText = true;
+        break;
       default:
         // throw Exception('Unsupported ${e.localName}');
         error('Unsupported ${e.localName}');
     }
   } else if (e is Text) {
+    if (ignoreText) return strbuf.toString();
     if (isInLink && functionMap.containsKey(e.text)) {
       ignoreHref = true;
-      strbuf.write(functionMap[e.text]!);
+      strbuf.write(functionMap[e.text]!.toName());
     } else if (isInParagraph) {
       if (functionMap.containsKey(e.text)) {
-        strbuf.write('[${functionMap[e.text]!}]');
+        strbuf.write('[${functionMap[e.text]!.toName()}]');
       } else {
         strbuf.write(
           e.text //
@@ -139,7 +173,7 @@ String toMarkdown(Node e, [StringBuffer? strbuf]) {
         );
       }
     } else if (isInBold && functionMap.containsKey(e.text)) {
-      strbuf.write('[${functionMap[e.text]!}]');
+      strbuf.write('[${functionMap[e.text]!.toName()}]');
     } else {
       strbuf.write(e.text);
     }
