@@ -52,6 +52,7 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 
 import 'everything.g.dart';
+import 'file_attribute.dart';
 import 'request_flags.dart';
 import 'sort.dart';
 import 'target_machine.dart';
@@ -65,7 +66,7 @@ abstract class EverythingApi {
 ''';
 const end = '}';
 
-const excludeFunction = ['runQuery', '_getFileTime'];
+const excludeFunction = ['runQuery', '_getFileTime', 'setQuery'];
 Future<void> patchFile(Map<String, Doc> docsMap) async {
   final dstFile = File(dstFilePath);
   final strbuf = StringBuffer();

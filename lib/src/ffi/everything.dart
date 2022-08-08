@@ -7,8 +7,11 @@ import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as path;
 
 import '../assets.dart';
+import '../query/query.dart';
+import '../query/results.dart';
 import 'everything.g.dart';
 import 'everything_api.g.dart';
+import 'file_attribute.dart';
 import 'request_flags.dart';
 import 'sort.dart';
 import 'string.dart';
@@ -17,17 +20,36 @@ import 'target_machine.dart';
 extension on bool {
   int get toInt => this ? 1 : 0;
 }
+/// microseconds From 1601-1-1 To 1970-1-1
+final microsecondsFrom1601To1970 =
+    DateTime.fromMicrosecondsSinceEpoch(0).difference(DateTime.utc(1601, 1, 1)).inMicroseconds;
 
+/// helper for FILETIME
+extension FileTImeHelper on FILETIME {
+  /// Contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC).
+  int get hundredNanoseconds => (dwHighDateTime << 32) + dwLowDateTime;
+
+  /// nanosecond intervals since January 1, 1601 (UTC).
+  int get nanosecond => hundredNanoseconds * 100;
+
+  /// trans to DateTime(UTC)
+  DateTime get utc => DateTime.fromMicrosecondsSinceEpoch(hundredNanoseconds ~/ 10 - microsecondsFrom1601To1970);
+}
+
+/// A class that wrap everything sdk's api
 class Everything implements EverythingApi {
   final EverythingBase _;
 
   /// The symbols are looked up in [dynamicLibrary].
   Everything(ffi.DynamicLibrary dynamicLibrary) : _ = EverythingBase(dynamicLibrary);
 
+  /// init using built-in library's path
   factory Everything.fromLibraryPath(String libraryPath) {
     assert(File(libraryPath).existsSync(), 'file $libraryPath not exist in ${Directory.current}');
     return Everything(ffi.DynamicLibrary.open(libraryPath));
   }
+
+  /// init using internal library's path
   factory Everything.fromDefaultLibraryPath({
     /// use only in development of this package
     bool isLocalTest = false,
@@ -38,8 +60,12 @@ class Everything implements EverythingApi {
       Everything.fromLibraryPath(
         path.normalize(
           path.join(
-            isLocalTest ? '' : (isTest ? 'build/flutter_assets' : 'data/flutter_assets'),
-            Assets.everything_search_engine$Everything64_dll,
+            isLocalTest //
+                ? ''
+                : (isTest ? 'build/flutter_assets' : 'data/flutter_assets'),
+            isLocalTest //
+                ? Assets.Everything64_dll
+                : Assets.everything_search_engine$Everything64_dll,
           ),
         ),
       );
@@ -157,16 +183,16 @@ class Everything implements EverythingApi {
   int get totResults => _.GetTotResults();
   /* get result info */
   @override
-  int get resultListSort => _.GetResultListSort();
+  EverythingSort get resultListSort => EverythingSort.fromVal(_.GetResultListSort());
   @override
   RequestFlags get resultListRequestFlags => RequestFlags.fromFlags(_.GetResultListRequestFlags());
   /* result item type */
   @override
   bool isVolumeResult(int dwIndex) => _.IsVolumeResult(dwIndex) == 1;
   @override
-  int isFolderResult(int dwIndex) => _.IsFolderResult(dwIndex);
+  bool isFolderResult(int dwIndex) => _.IsFolderResult(dwIndex) == 1;
   @override
-  int isFileResult(int dwIndex) => _.IsFileResult(dwIndex);
+  bool isFileResult(int dwIndex) => _.IsFileResult(dwIndex) == 1;
   /* result item info */
   @override
   String getResultFileName(int dwIndex) => _.GetResultFileNameW(dwIndex).toDartString();
@@ -205,7 +231,7 @@ class Everything implements EverythingApi {
       lpDateCreated,
     );
     final time = lpDateCreated.ref;
-    final datetime = DateTime(2020);
+    final datetime = time.utc;
     allocator.free(lpDateCreated);
     return datetime;
   }
@@ -221,7 +247,7 @@ class Everything implements EverythingApi {
       _getFileTime(dwIndex, _.GetResultDateAccessed);
 
   @override
-  int getResultAttributes(int dwIndex) => _.GetResultAttributes(dwIndex);
+  FileAttribute getResultAttributes(int dwIndex) => FileAttribute(_.GetResultAttributes(dwIndex));
   @override
   String getResultFileListFileName(int dwIndex) => _.GetResultFileListFileNameW(dwIndex).toDartString();
   @override
@@ -293,47 +319,53 @@ class Everything implements EverythingApi {
   void deleteRunHistory() => _.DeleteRunHistory();
 
   /* utils */
-  @override
-  void runQuery(
-    String q, {
-    bool isMatchCase = false,
-    bool isMatchWholeWord = false,
-    bool isRegex = false,
-    bool isMatchPath = false,
-    RequestFlags? requestFlags,
-    EverythingSort sort = EverythingSort.sizeAscending,
-  }) {
-    search = q;
-    this.requestFlags = requestFlags ??
-        RequestFlags(
-          fileName: true,
-          path: true,
-          size: true,
-        );
-    this.sort = sort;
 
-    /// search mode
-    matchCase = isMatchCase;
-    matchWholeWord = isMatchWholeWord;
-    matchPath = isMatchPath;
-    regex = isRegex;
+  /// run query
+  Results runQuery(Query q, {bool setQueryConfig = true}) {
+    if (setQueryConfig) setQuery(q);
 
     /// run query
     query(true);
-    final flags = resultListRequestFlags;
-    final resultLen = numResults;
-    final fileNum = numFileResults;
-    final folderNum = numFolderResults;
-    final totfile = totFileResults;
-    final totFolder = totFolderResults;
-    final tot = totResults;
+    final List<ResultItem> items = [];
+
+    final result = Results(
+      fileNum: numFileResults,
+      folderNum: numFolderResults,
+      resultsNum: numResults,
+      totFileNum: totFileResults,
+      totFolderNum: totFolderResults,
+      totResultsNum: totResults,
+      requestFlags: resultListRequestFlags,
+      sort: resultListSort,
+      items: items,
+    );
+
+    final resultLen = result.resultsNum;
+    final request = result.requestFlags;
+
     for (var i = 0; i < resultLen; i++) {
-      final size = getResultSize(i);
-
-      final filename = getResultFileName(i);
-      final path = getResultPath(i);
-
-      print('$i Name: $filename, Path: $path, Size: $size');
+      final resultItem = ResultItem.fromRequestFlags(this, request, i);
+      items.add(resultItem);
     }
+    return result;
+  }
+
+  /// set config in [Query]
+  void setQuery(Query query) {
+    search = query.search;
+
+    /// search mode
+    matchCase = query.isMatchCase;
+    matchWholeWord = query.isMatchWholeWord;
+    matchPath = query.isMatchPath;
+    regex = query.isRegex;
+
+    if (query.max != null) max = query.max!;
+    if (query.offset != null) offset = query.offset!;
+    if (query.replyWindow != null) replyWindow = query.replyWindow!;
+    if (query.replyID != null) replyID = query.replyID!;
+
+    sort = query.sort;
+    requestFlags = query.requestFlags;
   }
 }

@@ -5,6 +5,7 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 
 import 'everything.g.dart';
+import 'file_attribute.dart';
 import 'request_flags.dart';
 import 'sort.dart';
 import 'target_machine.dart';
@@ -1458,7 +1459,7 @@ abstract class EverythingApi {
   ///
   /// - [Everything_SetSort](/support/everything/sdk/everything_setsort)
   /// - [Everything_Query](/support/everything/sdk/everything_query)
-  int get resultListSort;
+  EverythingSort get resultListSort;
 
   /// The **Everything_GetResultListRequestFlags** function returns the flags of available result data.
   /// ## Syntax
@@ -1581,7 +1582,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_IsVolumeResult](/support/everything/sdk/everything_isvolumeresult)
   /// - [Everything_IsFileResult](/support/everything/sdk/everything_isfileresult)
-  int isFolderResult(int dwIndex);
+  bool isFolderResult(int dwIndex);
 
   /// The **Everything_IsFileResult** function determines if the visible result is file.
   /// ## Syntax
@@ -1624,7 +1625,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_IsVolumeResult](/support/everything/sdk/everything_isvolumeresult)
   /// - [Everything_IsFolderResult](/support/everything/sdk/everything_isfolderresult)
-  int isFileResult(int dwIndex);
+  bool isFileResult(int dwIndex);
 
   /// The **Everything_GetResultFileName** function retrieves the file name part only of the visible result.
   /// ## Syntax
@@ -2056,7 +2057,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  int getResultAttributes(int dwIndex);
+  FileAttribute getResultAttributes(int dwIndex);
 
   /// The **Everything_GetResultFileListFileName** function retrieves the file list full path and filename of the visible result.
   /// ## Syntax

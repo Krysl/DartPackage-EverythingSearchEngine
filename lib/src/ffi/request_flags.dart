@@ -1,7 +1,12 @@
+import '../../everything_search_engine.dart';
 import 'everything.g.dart';
 
 /// config to select what to show in results
 class RequestFlags {
+  /// determines if the visible result is a volumn/folder/file.
+  /// using [Everything.isVolumeResult], [Everything.isFolderResult], [Everything.isFileResult]
+  final bool kind;
+
   /// request 'File name' in results
   final bool fileName;
 
@@ -51,7 +56,8 @@ class RequestFlags {
   final bool highlightedFullPathAndFileName;
 
   /// Creates a new default allocator that applies no prefixing.
-  RequestFlags({
+  const RequestFlags({
+    this.kind = false,
     this.fileName = true,
     this.path = true,
     this.fullPathAndFileName = false,

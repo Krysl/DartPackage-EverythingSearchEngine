@@ -1,5 +1,6 @@
 import 'everything.g.dart';
 
+/// Target Machine type
 enum EverythingTargetMachine {
   /// Target machine is x86 (32 bit).
   x86(EVERYTHING_TARGET_MACHINE_X86),

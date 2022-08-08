@@ -8,18 +8,23 @@ void main() {
   });
   group('ffi test', () {
     test('query', () {
-      everything.runQuery(
-        '^pubspec\\.yaml\$',
-        isMatchPath: false,
-        isRegex: true,
+      final results = everything.runQuery(
+        const Query(
+          search: r'^pubspec\.yaml$',
+          isMatchPath: false,
+          isRegex: true,
+          // isMatchCase: false,
+          // isMatchWholeWord: false,
+          requestFlags: RequestFlags(
+            dateCreated: true,
+          ),
+          sort: EverythingSort.dateCreatedDescending,
+          max: 20,
+          offset: 0,
+        ),
       );
-    });
-    test('query', () {
-      everything.runQuery(
-        'public run',
-        isMatchPath: true,
-        isRegex: false,
-      );
+      // ignore: avoid_print
+      print(results.items.join('\n'));
     });
   });
 }
