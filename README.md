@@ -1,9 +1,9 @@
-![](assets/icon/Everything.ico)
+![](https://www.voidtools.com/Everything.ico)
 
-A package that wraps [![](assets/icon/Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) API calls using [FFI](https://dart.dev/guides/libraries/c-interop) to make them accessible to Dart code.
+A package that wraps [![](https://www.voidtools.com/favicon.ico) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) API calls using [FFI](https://dart.dev/guides/libraries/c-interop) to make them accessible to Dart code.
 
-- "[![](assets/icon/Everything-rgb888-16x16.jpg) Everything](https://www.voidtools.com/en-us/)" is a filename search engine for Windows.
-- [![](assets/icon/Everything-rgb888-16x16.jpg) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) provides a DLL and Lib interface to Everything over IPC.
+- "[![](https://www.voidtools.com/favicon.ico) Everything](https://www.voidtools.com/en-us/)" is a filename search engine for Windows.
+- [![](https://www.voidtools.com/favicon.ico) Everything SDK](https://www.voidtools.com/en-us/support/everything/sdk/) provides a DLL and Lib interface to Everything over IPC.
 ## Features
 
 
@@ -56,5 +56,5 @@ void main() {
 
 ## Additional information
 
-- [![](assets/icon/Everything-rgb888-16x16.jpg) SDK API document](https://www.voidtools.com/support/everything/sdk/)
-- [![](assets/icon/Everything-rgb888-16x16.jpg) Query Language document](https://www.voidtools.com/support/everything/searching/)
+- [![](https://www.voidtools.com/favicon.ico) SDK API document](https://www.voidtools.com/support/everything/sdk/)
+- [![](https://www.voidtools.com/favicon.ico) Query Language document](https://www.voidtools.com/support/everything/searching/)
