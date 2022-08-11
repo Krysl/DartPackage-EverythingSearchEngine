@@ -14,6 +14,8 @@ A package that wraps [![](https://www.voidtools.com/favicon.ico) Everything SDK]
 ```dart
 import 'package:everything_search_engine/everything.dart';
 
+/// `await Everything.ensureInited()` must be called before `Everything.fromDefaultLibraryPath()` unless you use your own dll library
+await Everything.ensureInited();
 Everything everything = Everything.fromDefaultLibraryPath();
 ```
 
@@ -34,7 +36,7 @@ Future<void> main() async {
   /// `await Everything.ensureInited()` must be called before `Everything.fromDefaultLibraryPath()` unless you use your own dll library
   await Everything.ensureInited();
 
-  late Everything everything = Everything.fromDefaultLibraryPath();
+  final everything = Everything.fromDefaultLibraryPath();
 
   final results = everything.runQuery(
     const Query(

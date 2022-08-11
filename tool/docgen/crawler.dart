@@ -13,17 +13,20 @@ Element getElementFromString(String? html, {String? selector}) {
   return element;
 }
 
-Future<Element> getElementFromUrl(String url, {String? selector}) => http.read(Uri.https(site, url)).then(
-      (value) => getElementFromString(value, selector: selector),
-    );
+Future<Element> getElementFromUrl(String url, {String? selector}) =>
+    http.read(Uri.https(site, url)).then(
+          (value) => getElementFromString(value, selector: selector),
+        );
 
 Future<Element> getWikiContentFromUrl(String url) async {
   var fileName = url.split(RegExp(r'/|\\')).last;
   if (fileName.isEmpty) fileName = 'index';
 
   const selector = '*.wikicontent';
-  final elementCache = await getElementFromFileCache(fileName, selector: selector);
-  final element = elementCache ?? await getElementFromUrl(url, selector: selector);
+  final elementCache =
+      await getElementFromFileCache(fileName, selector: selector);
+  final element =
+      elementCache ?? await getElementFromUrl(url, selector: selector);
 
   await saveWikiContentCache(fileName, element);
 

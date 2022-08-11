@@ -1,3 +1,6 @@
+## 0.2.1
+* using `dart format .` to format code
+
 ## 0.2.0
 * add [example](example/lib/main.dart)
 * change flutter asset to [Public assets](https://dart.dev/tools/pub/package-layout#public-assets), so the package can be used from the command line.

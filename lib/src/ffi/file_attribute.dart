@@ -27,16 +27,19 @@ class FileAttribute {
   bool get isFileAttributeHidden => (val & FILE_ATTRIBUTE_HIDDEN) != 0;
 
   /// Windows Server 2008 R2, Windows 7, Windows Server 2008, Windows Vista, Windows Server 2003 and Windows XP: This flag is not supported until Windows Server 2012.
-  bool get isFileAttributeIntegrityStream => (val & FILE_ATTRIBUTE_INTEGRITY_STREAM) != 0;
+  bool get isFileAttributeIntegrityStream =>
+      (val & FILE_ATTRIBUTE_INTEGRITY_STREAM) != 0;
 
   /// A file that does not have other attributes set. This attribute is valid only when used alone.
   bool get isFileAttributeNormal => (val & FILE_ATTRIBUTE_NORMAL) != 0;
 
   /// The file or directory is not to be indexed by the content indexing service.
-  bool get isFileAttributeNotContentIndexed => (val & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED) != 0;
+  bool get isFileAttributeNotContentIndexed =>
+      (val & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED) != 0;
 
   /// Windows Server 2008 R2, Windows 7, Windows Server 2008, Windows Vista, Windows Server 2003 and Windows XP: This flag is not supported until Windows 8 and Windows Server 2012.
-  bool get isFileAttributeNoScrubData => (val & FILE_ATTRIBUTE_NO_SCRUB_DATA) != 0;
+  bool get isFileAttributeNoScrubData =>
+      (val & FILE_ATTRIBUTE_NO_SCRUB_DATA) != 0;
 
   /// The data of a file is not available immediately. This attribute indicates that the file data is physically moved to offline storage. This attribute is used by Remote Storage, which is the hierarchical storage management software. Applications should not arbitrarily change this attribute.
   bool get isFileAttributeOffline => (val & FILE_ATTRIBUTE_OFFLINE) != 0;
@@ -45,13 +48,16 @@ class FileAttribute {
   bool get isFileAttributeReadonly => (val & FILE_ATTRIBUTE_READONLY) != 0;
 
   /// When this attribute is set, it means that the file or directory is not fully present locally. For a file that means that not all of its data is on local storage (e.g. it may be sparse with some data still in remote storage). For a directory it means that some of the directory contents are being virtualized from another location. Reading the file / enumerating the directory will be more expensive than normal, e.g. it will cause at least some of the file/directory content to be fetched from a remote store. Only kernel-mode callers can set this bit.
-  bool get isFileAttributeRecallOnDataAccess => (val & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS) != 0;
+  bool get isFileAttributeRecallOnDataAccess =>
+      (val & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS) != 0;
 
   /// This attribute only appears in directory enumeration classes (FILE_DIRECTORY_INFORMATION, FILE_BOTH_DIR_INFORMATION, etc.). When this attribute is set, it means that the file or directory has no physical representation on the local system; the item is virtual. Opening the item will be more expensive than normal, e.g. it will cause at least some of it to be fetched from a remote store.
-  bool get isFileAttributeRecallOnOpen => (val & FILE_ATTRIBUTE_RECALL_ON_OPEN) != 0;
+  bool get isFileAttributeRecallOnOpen =>
+      (val & FILE_ATTRIBUTE_RECALL_ON_OPEN) != 0;
 
   /// A file or directory that has an associated reparse point, or a file that is a symbolic link.
-  bool get isFileAttributeReparsePoint => (val & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+  bool get isFileAttributeReparsePoint =>
+      (val & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
 
   /// A file that is a sparse file.
   bool get isFileAttributeSparseFile => (val & FILE_ATTRIBUTE_SPARSE_FILE) != 0;

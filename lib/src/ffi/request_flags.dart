@@ -80,7 +80,8 @@ class RequestFlags {
   factory RequestFlags.fromFlags(int flags) => RequestFlags(
         fileName: flags & EVERYTHING_REQUEST_FILE_NAME != 0,
         path: flags & EVERYTHING_REQUEST_PATH != 0,
-        fullPathAndFileName: flags & EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME != 0,
+        fullPathAndFileName:
+            flags & EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME != 0,
         extension: flags & EVERYTHING_REQUEST_EXTENSION != 0,
         size: flags & EVERYTHING_REQUEST_SIZE != 0,
         dateCreated: flags & EVERYTHING_REQUEST_DATE_CREATED != 0,
@@ -90,10 +91,13 @@ class RequestFlags {
         fileListFileName: flags & EVERYTHING_REQUEST_FILE_LIST_FILE_NAME != 0,
         runCount: flags & EVERYTHING_REQUEST_RUN_COUNT != 0,
         dateRun: flags & EVERYTHING_REQUEST_DATE_RUN != 0,
-        dateRecentlyChanged: flags & EVERYTHING_REQUEST_DATE_RECENTLY_CHANGED != 0,
-        highlightedFileName: flags & EVERYTHING_REQUEST_HIGHLIGHTED_FILE_NAME != 0,
+        dateRecentlyChanged:
+            flags & EVERYTHING_REQUEST_DATE_RECENTLY_CHANGED != 0,
+        highlightedFileName:
+            flags & EVERYTHING_REQUEST_HIGHLIGHTED_FILE_NAME != 0,
         highlightedPath: flags & EVERYTHING_REQUEST_HIGHLIGHTED_PATH != 0,
-        highlightedFullPathAndFileName: flags & EVERYTHING_REQUEST_HIGHLIGHTED_FULL_PATH_AND_FILE_NAME != 0,
+        highlightedFullPathAndFileName:
+            flags & EVERYTHING_REQUEST_HIGHLIGHTED_FULL_PATH_AND_FILE_NAME != 0,
       );
 
   /// the value defined in C code
@@ -113,5 +117,7 @@ class RequestFlags {
       (dateRecentlyChanged ? EVERYTHING_REQUEST_DATE_RECENTLY_CHANGED : 0) |
       (highlightedFileName ? EVERYTHING_REQUEST_HIGHLIGHTED_FILE_NAME : 0) |
       (highlightedPath ? EVERYTHING_REQUEST_HIGHLIGHTED_PATH : 0) |
-      (highlightedFullPathAndFileName ? EVERYTHING_REQUEST_HIGHLIGHTED_FULL_PATH_AND_FILE_NAME : 0);
+      (highlightedFullPathAndFileName
+          ? EVERYTHING_REQUEST_HIGHLIGHTED_FULL_PATH_AND_FILE_NAME
+          : 0);
 }
