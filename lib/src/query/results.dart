@@ -84,21 +84,29 @@ class ResultItem {
     }
     filename = flags.fileName ? e.getResultFileName(index) : null;
     path = flags.path ? e.getResultPath(index) : null;
-    fullPathName = flags.fullPathAndFileName ? e.getResultFullPathName(index) : null;
+    fullPathName =
+        flags.fullPathAndFileName ? e.getResultFullPathName(index) : null;
     extension = flags.extension ? e.getResultExtension(index) : null;
     size = flags.size ? e.getResultSize(index) : null;
     dateCreated = flags.dateCreated ? e.getResultDateCreated(index) : null;
     dateModified = flags.dateModified ? e.getResultDateModified(index) : null;
     dateAccessed = flags.dateAccessed ? e.getResultDateAccessed(index) : null;
     attributes = flags.attributes ? e.getResultAttributes(index) : null;
-    fileListFileName = flags.fileListFileName ? e.getResultFileListFileName(index) : null;
+    fileListFileName =
+        flags.fileListFileName ? e.getResultFileListFileName(index) : null;
     runCount = flags.runCount ? e.getResultRunCount(index) : null;
     dateRun = flags.dateRun ? e.getResultDateRun(index) : null;
-    dateRecentlyChanged = flags.dateRecentlyChanged ? e.getResultDateRecentlyChanged(index) : null;
-    highlightedFileName = flags.highlightedFileName ? e.getResultHighlightedFileName(index) : null;
-    highlightedPath = flags.highlightedPath ? e.getResultHighlightedPath(index) : null;
-    highlightedFullPathAndFileName =
-        flags.highlightedFullPathAndFileName ? e.getResultHighlightedFullPathAndFileName(index) : null;
+    dateRecentlyChanged = flags.dateRecentlyChanged
+        ? e.getResultDateRecentlyChanged(index)
+        : null;
+    highlightedFileName = flags.highlightedFileName
+        ? e.getResultHighlightedFileName(index)
+        : null;
+    highlightedPath =
+        flags.highlightedPath ? e.getResultHighlightedPath(index) : null;
+    highlightedFullPathAndFileName = flags.highlightedFullPathAndFileName
+        ? e.getResultHighlightedFullPathAndFileName(index)
+        : null;
   }
   @override
   String toString() {
@@ -112,14 +120,19 @@ class ResultItem {
     if (dateModified != null) strbuf.write('dateModified: $dateModified, ');
     if (dateAccessed != null) strbuf.write('dateAccessed: $dateAccessed, ');
     if (attributes != null) strbuf.write('attributes: $attributes, ');
-    if (fileListFileName != null) strbuf.write('fileListFileName: $fileListFileName, ');
+    if (fileListFileName != null)
+      strbuf.write('fileListFileName: $fileListFileName, ');
     if (runCount != null) strbuf.write('runCount: $runCount, ');
     if (dateRun != null) strbuf.write('dateRun: $dateRun, ');
-    if (dateRecentlyChanged != null) strbuf.write('dateRecentlyChanged: $dateRecentlyChanged, ');
-    if (highlightedFileName != null) strbuf.write('highlightedFileName: $highlightedFileName, ');
-    if (highlightedPath != null) strbuf.write('highlightedPath: $highlightedPath, ');
+    if (dateRecentlyChanged != null)
+      strbuf.write('dateRecentlyChanged: $dateRecentlyChanged, ');
+    if (highlightedFileName != null)
+      strbuf.write('highlightedFileName: $highlightedFileName, ');
+    if (highlightedPath != null)
+      strbuf.write('highlightedPath: $highlightedPath, ');
     if (highlightedFullPathAndFileName != null) {
-      strbuf.write('highlightedFullPathAndFileName: $highlightedFullPathAndFileName, ');
+      strbuf.write(
+          'highlightedFullPathAndFileName: $highlightedFullPathAndFileName, ');
     }
 
     return strbuf.toString();

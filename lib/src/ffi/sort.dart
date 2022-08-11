@@ -66,7 +66,8 @@ enum EverythingSort implements Comparable<EverythingSort> {
   dateRecentlyChangedAscending(EVERYTHING_SORT_DATE_RECENTLY_CHANGED_ASCENDING),
 
   /// sort by date recently changed descending
-  dateRecentlyChangedDescending(EVERYTHING_SORT_DATE_RECENTLY_CHANGED_DESCENDING),
+  dateRecentlyChangedDescending(
+      EVERYTHING_SORT_DATE_RECENTLY_CHANGED_DESCENDING),
 
   /// sort by date accessed ascending
   dateAccessedAscending(EVERYTHING_SORT_DATE_ACCESSED_ASCENDING),

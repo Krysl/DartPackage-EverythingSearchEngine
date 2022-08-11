@@ -30,7 +30,8 @@ extension ToDartString on LPCWSTR {
     }
   }
 
-  static String _toKnownLengthString(ffi.Pointer<ffi.Uint16> codeUnits, int length) =>
+  static String _toKnownLengthString(
+          ffi.Pointer<ffi.Uint16> codeUnits, int length) =>
       String.fromCharCodes(codeUnits.asTypedList(length));
 
   static String _toUnknownLengthString(ffi.Pointer<ffi.Uint16> codeUnits) {
@@ -56,7 +57,8 @@ extension ToDartString on LPCWSTR {
 
   void _ensureNotNullptr(String operation) {
     if (this == ffi.nullptr) {
-      throw UnsupportedError("Operation '$operation' not allowed on a 'nullptr'.");
+      throw UnsupportedError(
+          "Operation '$operation' not allowed on a 'nullptr'.");
     }
   }
 }

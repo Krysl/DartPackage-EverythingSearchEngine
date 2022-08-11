@@ -11,7 +11,8 @@ import 'utils.dart';
 final srcFilePath = p.join(parrentDir, 'lib/src/ffi/everything.dart');
 final dstFilePath = p.join(parrentDir, 'lib/src/ffi/everything_api.g.dart');
 
-final LinkedHashMap<String, MethodDeclaration> functionMap = LinkedHashMap<String, MethodDeclaration>();
+final LinkedHashMap<String, MethodDeclaration> functionMap =
+    LinkedHashMap<String, MethodDeclaration>();
 
 Future<void> loadFunctionMap() async {
   final srcFile = File(srcFilePath);
@@ -95,13 +96,15 @@ Future<void> patchFile(Map<String, Doc> docsMap) async {
 
     strbuf.write(name);
 
-    if (member.typeParameters != null) strbuf.write(member.typeParameters.toString());
+    if (member.typeParameters != null)
+      strbuf.write(member.typeParameters.toString());
     if (member.parameters != null) strbuf.write(member.parameters.toString());
     strbuf.write(';\n\n');
     patched++;
   }
   strbuf.write(end);
-  await dstFile.writeAsString(strbuf.toString().split('\n').map((e) => e.trimRight()).join('\n'));
+  await dstFile.writeAsString(
+      strbuf.toString().split('\n').map((e) => e.trimRight()).join('\n'));
 
   debug('$patched function patched');
 }

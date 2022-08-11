@@ -1771,7 +1771,8 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_GetResultFileName](/support/everything/sdk/everything_getresultfilename)
   /// - [Everything_GetResultPath](/support/everything/sdk/everything_getresultpath)
-  String getResultFullPathName(int dwIndex, {int len = 260, ffi.Allocator allocator = malloc});
+  String getResultFullPathName(int dwIndex,
+      {int len = 260, ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultExtension** function retrieves the extension part of a visible result.
   /// ## Syntax
@@ -1914,7 +1915,8 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateCreated(int dwIndex, {ffi.Allocator allocator = malloc});
+  DateTime getResultDateCreated(int dwIndex,
+      {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultDateModified** function retrieves the modified date of a visible result.
   /// ## Syntax
@@ -1963,7 +1965,8 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateModified(int dwIndex, {ffi.Allocator allocator = malloc});
+  DateTime getResultDateModified(int dwIndex,
+      {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultDateAccessed** function retrieves the accessed date of a visible result.
   /// ## Syntax
@@ -2012,7 +2015,8 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateAccessed(int dwIndex, {ffi.Allocator allocator = malloc});
+  DateTime getResultDateAccessed(int dwIndex,
+      {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultAttributes** function retrieves the attributes of a visible result.
   /// ## Syntax
@@ -2248,7 +2252,8 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateRecentlyChanged(int dwIndex, {ffi.Allocator allocator = malloc});
+  DateTime getResultDateRecentlyChanged(int dwIndex,
+      {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultHighlightedFileName** function retrieves the highlighted file name part of the visible result.
   /// ## Syntax
@@ -2855,5 +2860,4 @@ abstract class EverythingApi {
   /// - [Everything_SetRunCountFromFileName](/support/everything/sdk/everything_setruncountfromfilename)
   /// - [Everything_IncRunCountFromFileName](/support/everything/sdk/everything_incruncountfromfilename)
   void deleteRunHistory();
-
 }

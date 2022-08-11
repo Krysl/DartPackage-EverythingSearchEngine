@@ -6,7 +6,8 @@ import 'utils.dart';
 final funcGetRegex = RegExp(r'^\s*(\w+)\s+get\s+(\w+)\s+');
 const funcGetPrefix = 'Everything_Get';
 
-final funcSetRegex = RegExp(r'^ *set +(?<fun>\w+)\s*\(((?<type>\w+) (?<arg>\w+),?\s*)*\)');
+final funcSetRegex =
+    RegExp(r'^ *set +(?<fun>\w+)\s*\(((?<type>\w+) (?<arg>\w+),?\s*)*\)');
 const funcSetPrefix = 'Everything_Set';
 
 final funcRegex = RegExp(
