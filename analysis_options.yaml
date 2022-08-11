@@ -47,6 +47,7 @@ linter:
     always_declare_return_types: true
     sort_child_properties_last: true
     unawaited_futures: true
+    discarded_futures: true
     avoid_types_on_closure_parameters: false
     avoid_private_typedef_functions: true
     avoid_positional_boolean_parameters: true
@@ -63,4 +64,5 @@ analyzer:
     - lib/src/assets.dart
   language:
     strict-casts: true
+    strict-inference: true
     strict-raw-types: true

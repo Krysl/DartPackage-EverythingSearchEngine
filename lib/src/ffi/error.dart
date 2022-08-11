@@ -2,7 +2,7 @@ import 'everything.g.dart';
 
 /// error code retrieved by [Everything.lastError]
 /// https://www.voidtools.com/support/everything/sdk/everything_getlasterror/#return_value
-enum EverythingError implements Comparable<EverythingError> {
+enum EverythingErrorCode implements Comparable<EverythingErrorCode> {
   /// The operation completed successfully.
   ok(EVERYTHING_OK),
 
@@ -41,10 +41,10 @@ enum EverythingError implements Comparable<EverythingError> {
   final int val;
 
   /// enum constructor
-  const EverythingError(this.val);
+  const EverythingErrorCode(this.val);
 
   /// trans C value to Dart enum
-  factory EverythingError.fromVal(int val) {
+  factory EverythingErrorCode.fromVal(int val) {
     switch (val) {
       case EVERYTHING_OK:
         return ok;
@@ -71,5 +71,20 @@ enum EverythingError implements Comparable<EverythingError> {
     }
   }
   @override
-  int compareTo(EverythingError other) => val - other.val;
+  int compareTo(EverythingErrorCode other) => val - other.val;
+}
+
+/// an implement of [Exception] to be throw when encountering an error in Everything search
+class EverythingException implements Exception {
+  /// error code
+  final EverythingErrorCode code;
+
+  /// Extra information in the error message
+  final String? message;
+
+  /// create a EverythingException
+  EverythingException(this.code, [this.message]);
+
+  @override
+  String toString() => 'EverythingError: ${code.name} ${message ?? ''}';
 }

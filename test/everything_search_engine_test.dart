@@ -1,10 +1,11 @@
 import 'package:everything_search_engine/everything_search_engine.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
-void main() {
+void main() async {
   late Everything everything;
-  setUpAll(() {
-    everything = Everything.fromDefaultLibraryPath(isLocalTest: true);
+  setUpAll(() async {
+    await Everything.ensureInited();
+    everything = Everything.fromDefaultLibraryPath();
   });
   group('ffi test', () {
     test('query', () {

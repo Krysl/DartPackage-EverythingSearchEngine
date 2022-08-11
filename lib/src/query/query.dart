@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:meta/meta.dart';
 
 import '../ffi/everything.dart';
 import '../ffi/everything.g.dart';

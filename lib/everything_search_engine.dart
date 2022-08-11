@@ -6,7 +6,6 @@
 /// with all the export needed for your library.
 library everything_search_engine;
 
-export 'src/assets.dart';
 export 'src/ffi/error.dart';
 export 'src/ffi/everything.dart';
 export 'src/ffi/file_attribute.dart';

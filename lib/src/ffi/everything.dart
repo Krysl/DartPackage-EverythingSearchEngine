@@ -1,14 +1,18 @@
 // ignore_for_file: avoid_positional_boolean_parameters
 
+import 'dart:async';
+
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path;
 
-import '../assets.dart';
 import '../query/query.dart';
 import '../query/results.dart';
+import 'error.dart';
 import 'everything.g.dart';
 import 'everything_api.g.dart';
 import 'file_attribute.dart';
@@ -20,6 +24,7 @@ import 'target_machine.dart';
 extension on bool {
   int get toInt => this ? 1 : 0;
 }
+
 /// microseconds From 1601-1-1 To 1970-1-1
 final microsecondsFrom1601To1970 =
     DateTime.fromMicrosecondsSinceEpoch(0).difference(DateTime.utc(1601, 1, 1)).inMicroseconds;
@@ -40,6 +45,93 @@ extension FileTImeHelper on FILETIME {
 class Everything implements EverythingApi {
   final EverythingBase _;
 
+  static bool _inited = false;
+
+  /// get the default library's path
+  static String get defaultLibraryPath => _libraryPath;
+  static late final String _libraryPath;
+
+  static String _ensureInitedLibraryPath() {
+    assert(_inited == true, 'default libary path not inited. please run `await Everything.libraryPathInit();` first.');
+    return _libraryPath;
+  }
+
+  /// ensure inited Everything's library path
+  static Future<void> ensureInited([bool? isInTest]) async {
+    bool inTest = isInTest ?? false;
+    if (isInTest == null) {
+      assert(() {
+        inTest = true;
+        return true;
+      }());
+    }
+    if (inTest) {
+      await _libraryPathInitTest();
+    } else {
+      if (_inited) return;
+      final dir = path.dirname(Platform.resolvedExecutable);
+      const dllPath = 'packages/everything_search_engine/src/dll/Everything64.dll';
+      final libraryPath = path.join(dir, 'data/flutter_assets', dllPath);
+      if (File(libraryPath).existsSync()) {
+        _libraryPath = libraryPath;
+      } else {
+        await _libraryPathInitTest();
+      }
+      _inited = true;
+    }
+  }
+
+  static Future<void> _libraryPathInitTest() async {
+    if (_inited) return;
+    final packageUri = Uri.parse('package:everything_search_engine/src/dll/Everything64.dll');
+    Uri? absoluteUri;
+
+    try {
+      final future = Isolate.resolvePackageUri(packageUri);
+      const timeout = Duration(seconds: 5);
+      absoluteUri = await future.timeout(timeout);
+      // ignore: avoid_catching_errors
+    } on UnsupportedError catch (_) {
+      // ignore: avoid_print
+      print('''
+executable:${Platform.resolvedExecutable}
+arguments:${Platform.executableArguments}
+current:${Directory.current}
+''');
+      String packageConfigPath = '';
+      if (path.basenameWithoutExtension(Platform.resolvedExecutable) == 'flutter_tester') {
+        const packagesPrefix = '--packages=';
+        packageConfigPath = Platform.executableArguments
+            .firstWhere(
+              (arg) => arg.startsWith(packagesPrefix),
+              orElse: () => '',
+            )
+            .replaceFirst(packagesPrefix, '');
+        if (packageConfigPath.isNotEmpty) {
+          final packageConfig = await loadPackageConfig(File(packageConfigPath));
+          absoluteUri = packageConfig.resolve(packageUri);
+        } else {
+          rethrow;
+        }
+      } else {
+        final packageConfig = await findPackageConfig(Directory.current);
+        absoluteUri = packageConfig?.resolve(packageUri);
+        if (absoluteUri == null) rethrow;
+      }
+    }
+
+    if (absoluteUri != null) {
+      final file = File.fromUri(absoluteUri);
+      if (file.existsSync()) {
+        // print('default everything library: $absoluteUri');
+
+        _libraryPath = file.path;
+      }
+    }
+    _inited = true;
+    return;
+  }
+
   /// The symbols are looked up in [dynamicLibrary].
   Everything(ffi.DynamicLibrary dynamicLibrary) : _ = EverythingBase(dynamicLibrary);
 
@@ -50,22 +142,10 @@ class Everything implements EverythingApi {
   }
 
   /// init using internal library's path
-  factory Everything.fromDefaultLibraryPath({
-    /// use only in development of this package
-    bool isLocalTest = false,
-
-    /// use in test for common user
-    bool isTest = false,
-  }) =>
-      Everything.fromLibraryPath(
+  factory Everything.fromDefaultLibraryPath() => Everything.fromLibraryPath(
         path.normalize(
           path.join(
-            isLocalTest //
-                ? ''
-                : (isTest ? 'build/flutter_assets' : 'data/flutter_assets'),
-            isLocalTest //
-                ? Assets.Everything64_dll
-                : Assets.everything_search_engine$Everything64_dll,
+            _ensureInitedLibraryPath(),
           ),
         ),
       );
@@ -74,7 +154,13 @@ class Everything implements EverythingApi {
   Everything.fromLookup(ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup)
       : _ = EverythingBase.fromLookup(lookup);
 
-/* codegen begin */
+  void _checkLastError(int ret, [String? msg]) {
+    final err = EverythingErrorCode.fromVal(ret);
+    if (err != EverythingErrorCode.ok && err != EverythingErrorCode.errorUnknow) {
+      throw EverythingException(err, msg);
+    }
+  }
+
   /* API */
   /* version */
   @override
@@ -217,19 +303,20 @@ class Everything implements EverythingApi {
   int getResultSize(int dwIndex, {ffi.Allocator allocator = malloc}) {
     final lpSize = allocator<LARGE_INTEGER>();
     final ret = _.GetResultSize(dwIndex, lpSize); //todo:
-
+    if (ret == 0) _checkLastError(lastError);
     final size = lpSize.ref.QuadPart;
     allocator.free(lpSize);
     return size;
   }
 
-  DateTime _getFileTime(int dwIndex, int Function(int, ffi.Pointer<FILETIME>) getFileTime,
+  DateTime _getFileTime(int dwIndex, int Function(int, ffi.Pointer<FILETIME>) getFileTime, String? errorMessage,
       {ffi.Allocator allocator = malloc}) {
     final lpDateCreated = allocator<FILETIME>();
     final ret = getFileTime(
       dwIndex,
       lpDateCreated,
     );
+    if (ret == 0) _checkLastError(lastError);
     final time = lpDateCreated.ref;
     final datetime = time.utc;
     allocator.free(lpDateCreated);
@@ -238,13 +325,13 @@ class Everything implements EverythingApi {
 
   @override
   DateTime getResultDateCreated(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateCreated);
+      _getFileTime(dwIndex, _.GetResultDateCreated, 'getResultDateCreated');
   @override
   DateTime getResultDateModified(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateModified);
+      _getFileTime(dwIndex, _.GetResultDateModified, 'getResultDateModified');
   @override
   DateTime getResultDateAccessed(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateAccessed);
+      _getFileTime(dwIndex, _.GetResultDateAccessed, 'getResultDateAccessed');
 
   @override
   FileAttribute getResultAttributes(int dwIndex) => FileAttribute(_.GetResultAttributes(dwIndex));
@@ -255,10 +342,10 @@ class Everything implements EverythingApi {
 
   @override
   DateTime getResultDateRun(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateRun);
+      _getFileTime(dwIndex, _.GetResultDateRun, 'getResultDateRun');
   @override
   DateTime getResultDateRecentlyChanged(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateRecentlyChanged);
+      _getFileTime(dwIndex, _.GetResultDateRecentlyChanged, 'getResultDateRecentlyChanged');
   @override
   String getResultHighlightedFileName(int dwIndex) => _.GetResultHighlightedFileNameW(dwIndex).toDartString();
   @override
