@@ -120,16 +120,20 @@ class ResultItem {
     if (dateModified != null) strbuf.write('dateModified: $dateModified, ');
     if (dateAccessed != null) strbuf.write('dateAccessed: $dateAccessed, ');
     if (attributes != null) strbuf.write('attributes: $attributes, ');
-    if (fileListFileName != null)
+    if (fileListFileName != null) {
       strbuf.write('fileListFileName: $fileListFileName, ');
+    }
     if (runCount != null) strbuf.write('runCount: $runCount, ');
     if (dateRun != null) strbuf.write('dateRun: $dateRun, ');
-    if (dateRecentlyChanged != null)
+    if (dateRecentlyChanged != null) {
       strbuf.write('dateRecentlyChanged: $dateRecentlyChanged, ');
-    if (highlightedFileName != null)
+    }
+    if (highlightedFileName != null) {
       strbuf.write('highlightedFileName: $highlightedFileName, ');
-    if (highlightedPath != null)
+    }
+    if (highlightedPath != null) {
       strbuf.write('highlightedPath: $highlightedPath, ');
+    }
     if (highlightedFullPathAndFileName != null) {
       strbuf.write(
           'highlightedFullPathAndFileName: $highlightedFullPathAndFileName, ');

@@ -96,8 +96,9 @@ Future<void> patchFile(Map<String, Doc> docsMap) async {
 
     strbuf.write(name);
 
-    if (member.typeParameters != null)
+    if (member.typeParameters != null) {
       strbuf.write(member.typeParameters.toString());
+    }
     if (member.parameters != null) strbuf.write(member.parameters.toString());
     strbuf.write(';\n\n');
     patched++;

@@ -18,9 +18,10 @@ Future<void> loadWikiContentCache() => cacheDir.list().listen((entity) {
       wikiContent[name] = entity.path;
     }).asFuture();
 
-Future<Element> getElementFromFile(String file, {String? selector}) => File(file).readAsString().then(
-      (value) => getElementFromString(value, selector: selector),
-    );
+Future<Element> getElementFromFile(String file, {String? selector}) =>
+    File(file).readAsString().then(
+          (value) => getElementFromString(value, selector: selector),
+        );
 Future<Element>? getElementFromFileCache(String fileName, {String? selector}) {
   final cacheFilePath = wikiContent[fileName];
   if (cacheFilePath != null) {
