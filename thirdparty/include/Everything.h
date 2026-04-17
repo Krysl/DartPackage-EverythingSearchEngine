@@ -35,16 +35,19 @@
 extern "C" {
 #endif
 
-#define EVERYTHING_OK						0 // no error detected
-#define EVERYTHING_ERROR_MEMORY				1 // out of memory.
-#define EVERYTHING_ERROR_IPC				2 // Everything search client is not running
-#define EVERYTHING_ERROR_REGISTERCLASSEX	3 // unable to register window class.
-#define EVERYTHING_ERROR_CREATEWINDOW		4 // unable to create listening window
-#define EVERYTHING_ERROR_CREATETHREAD		5 // unable to create listening thread
-#define EVERYTHING_ERROR_INVALIDINDEX		6 // invalid index
-#define EVERYTHING_ERROR_INVALIDCALL		7 // invalid call
-#define EVERYTHING_ERROR_INVALIDREQUEST		8 // invalid request data, request data first.
-#define EVERYTHING_ERROR_INVALIDPARAMETER	9 // bad parameter.
+// if not defined, version is 1.
+#define EVERYTHING_SDK_VERSION								2
+
+#define EVERYTHING_OK										0 // no error detected
+#define EVERYTHING_ERROR_MEMORY								1 // out of memory.
+#define EVERYTHING_ERROR_IPC								2 // Everything search client is not running
+#define EVERYTHING_ERROR_REGISTERCLASSEX					3 // unable to register window class.
+#define EVERYTHING_ERROR_CREATEWINDOW						4 // unable to create listening window
+#define EVERYTHING_ERROR_CREATETHREAD						5 // unable to create listening thread
+#define EVERYTHING_ERROR_INVALIDINDEX						6 // invalid index
+#define EVERYTHING_ERROR_INVALIDCALL						7 // invalid call
+#define EVERYTHING_ERROR_INVALIDREQUEST						8 // invalid request data, request data first.
+#define EVERYTHING_ERROR_INVALIDPARAMETER					9 // bad parameter.
 
 #define EVERYTHING_SORT_NAME_ASCENDING						1
 #define EVERYTHING_SORT_NAME_DESCENDING						2
@@ -187,6 +190,8 @@ EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetMinorVersion(void);
 EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetRevision(void);
 EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetBuildNumber(void);
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_Exit(void);
+UINT EVERYTHINGAPI Everything_MSIExitAndStopService(void *msihandle);
+UINT EVERYTHINGAPI Everything_MSIStartService(void *msihandle);
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_IsDBLoaded(void); // Everything 1.4.1
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_IsAdmin(void); // Everything 1.4.1
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_IsAppData(void); // Everything 1.4.1
@@ -196,6 +201,8 @@ EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_SaveDB(void); // Everything 1.4.
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_SaveRunHistory(void); // Everything 1.4.1
 EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_DeleteRunHistory(void); // Everything 1.4.1
 EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetTargetMachine(void); // Everything 1.4.1
+EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_IsFastSort(DWORD sortType); // Everything 1.4.1.859
+EVERYTHINGUSERAPI BOOL EVERYTHINGAPI Everything_IsFileInfoIndexed(DWORD fileInfoType); // Everything 1.4.1.859
 
 EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetRunCountFromFileNameW(LPCWSTR lpFileName); // Everything 1.4.1
 EVERYTHINGUSERAPI DWORD EVERYTHINGAPI Everything_GetRunCountFromFileNameA(LPCSTR lpFileName); // Everything 1.4.1

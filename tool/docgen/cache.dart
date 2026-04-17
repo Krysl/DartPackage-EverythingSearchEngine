@@ -25,7 +25,7 @@ Future<Element> getElementFromFile(String file, {String? selector}) =>
 Future<Element>? getElementFromFileCache(String fileName, {String? selector}) {
   final cacheFilePath = wikiContent[fileName];
   if (cacheFilePath != null) {
-    return getElementFromFile(cacheFilePath, selector: '*.wikicontent');
+    return getElementFromFile(cacheFilePath, selector: selector);
   } else {
     return null;
   }

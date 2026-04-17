@@ -10,7 +10,7 @@ typedef DocsMap = Map<String, Doc>;
 Future<DocsMap> getDocsMap() async {
   DocsMap docsMap = {};
   await loadWikiContentCache();
-  final titleMap = await getTitleMap();
+  final titleMap = await getTitleMapFromWikiNav();
   final apis = getApi(titleMap);
   // debug(apis.values.toList().join('\n'));
   for (final kv in apis.entries) {

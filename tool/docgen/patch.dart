@@ -20,11 +20,17 @@ Future<void> loadFunctionMap() async {
   final ast = parseString(content: src);
   for (final child in ast.unit.childEntities) {
     if (child is ClassDeclaration) {
-      if (child.name2.toString() != 'Everything') continue;
-      final members = child.members;
+      if (child.namePart.toString() != 'Everything') continue;
+      final members = (child.body as BlockClassBody).members;
       for (final member in members) {
         if (member is MethodDeclaration) {
-          final name = member.name2.toString();
+          final name = member.name.toString();
+
+          // Only expose public instance API members in EverythingApi.
+          if (member.isStatic || name.startsWith('_')) {
+            continue;
+          }
+
           var docName = name;
           if (member.isGetter) docName = 'get $docName';
           if (member.isSetter) docName = 'set $docName';
@@ -36,9 +42,9 @@ Future<void> loadFunctionMap() async {
 }
 
 extension MethodDeclarationHelper on MethodDeclaration {
-  String toName() => name2.toString();
+  String toName() => name.toString();
   String toDocName() {
-    var docName = name2.toString();
+    var docName = name.toString();
     if (isGetter) docName = 'get $docName';
     if (isSetter) docName = 'set $docName';
     return docName;
@@ -54,6 +60,7 @@ import 'package:ffi/ffi.dart';
 
 import 'everything.g.dart';
 import 'file_attribute.dart';
+import 'file_info_indexed.dart';
 import 'request_flags.dart';
 import 'sort.dart';
 import 'target_machine.dart';
@@ -63,11 +70,15 @@ import 'target_machine.dart';
 /// ```bat
 /// dart tool/docgen.dart 
 /// ```
-abstract class EverythingApi {
+abstract interface class EverythingApi {
 ''';
 const end = '}';
 
-const excludeFunction = ['runQuery', '_getFileTime', 'setQuery'];
+const excludeFunction = [
+  'runQuery',
+  '_getFileTime',
+  'setQuery',
+];
 Future<void> patchFile(Map<String, Doc> docsMap) async {
   final dstFile = File(dstFilePath);
   final strbuf = StringBuffer();
@@ -77,7 +88,7 @@ Future<void> patchFile(Map<String, Doc> docsMap) async {
 
   for (final child in functionMap.values) {
     final member = child;
-    final name = member.name2.toString();
+    final name = member.name.toString();
     if (excludeFunction.contains(name)) continue;
 
     final doc = getDoc(docsMap, member);
@@ -105,7 +116,8 @@ Future<void> patchFile(Map<String, Doc> docsMap) async {
   }
   strbuf.write(end);
   await dstFile.writeAsString(
-      strbuf.toString().split('\n').map((e) => e.trimRight()).join('\n'));
+    strbuf.toString().split('\n').map((e) => e.trimRight()).join('\n'),
+  );
 
   debug('$patched function patched');
 }

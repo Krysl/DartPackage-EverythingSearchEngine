@@ -8,7 +8,7 @@ platforms:
   windows:
 
 environment:
-  sdk: '>=2.17.5 <3.0.0'
+  sdk: ^3.11.4
 
 dependencies:
   ffi: ^2.0.1
@@ -16,28 +16,31 @@ dependencies:
   package_config: ^2.0.0
   path: ^1.8.1
   path_provider: ^2.0.11
+  win32: ^6.0.1
 
 dev_dependencies:
-  flutter_lints: ^2.0.1
-  ffigen: ^6.0.1
-  assets_gen: ^1.2.0
-  http: ^0.13.5
+  flutter_lints: ^6.0.0
+  ffigen: ^20.1.1
+  flutter_gen_runner: 5.13.0
+  http: ^1.6.0
   html: ^0.15.0
-  analyzer: ^4.4.0
-  change_case: ^1.0.2
+  analyzer: ^10.0.1
+  change_case: ^2.2.0
   test: ^1.21.4
+  build_runner: ^2.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-# flutter:
+flutter:
   # To add assets to your package, add an assets section, like this:
-  # assets:
+  assets:
   #   #   - images/a_dot_burr.jpeg
   #   #   - images/a_dot_ham.jpeg
   #   - thirdparty/dll/Everything64.dll
-  #   - assets/icon/
+    - assets/icon/
+    - thirdparty/dll/
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
@@ -69,3 +72,12 @@ assets_gen:
   class_name: "EverythingAssets"
   output: src/assets.dart
   omit_path_levels: 2
+
+flutter_gen:
+  assets:
+    outputs:
+      package_parameter_enabled: true
+      directory_path_enabled: true
+  output: lib/src/assets
+  integrations:
+    image: false

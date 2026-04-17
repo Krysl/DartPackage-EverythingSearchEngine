@@ -6,6 +6,7 @@ import 'package:ffi/ffi.dart';
 
 import 'everything.g.dart';
 import 'file_attribute.dart';
+import 'file_info_indexed.dart';
 import 'request_flags.dart';
 import 'sort.dart';
 import 'target_machine.dart';
@@ -15,7 +16,7 @@ import 'target_machine.dart';
 /// ```bat
 /// dart tool/docgen.dart
 /// ```
-abstract class EverythingApi {
+abstract interface class EverythingApi {
   /// The **Everything_GetMajorVersion** function retrieves the major version number of Everything.
   /// ## Syntax
   /// ```
@@ -214,6 +215,7 @@ abstract class EverythingApi {
   /// |  EVERYTHING_TARGET_MACHINE_X86 (1) | Target machine is x86 (32 bit). |
   /// |  EVERYTHING_TARGET_MACHINE_X64 (2) | Target machine is x64 (64 bit). |
   /// |  EVERYTHING_TARGET_MACHINE_ARM (3) | Target machine is ARM. |
+  /// |  EVERYTHING_TARGET_MACHINE_ARM64 (4) | Target machine is ARM64. |
   ///
   /// The function returns 0 if target machine information is unavailable. To get extended error information, call [Everything_GetLastError](/support/everything/sdk/everything_getlasterror)
   ///
@@ -543,7 +545,128 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   bool get regex;
 
-  /// The **Everything_SetMax** function set the maximum number of results to return from [Everything_Query](/support/everything/sdk/everything_query).
+  /// The **Everything_IsFastSort** function checks if the specified file information is indexed and has fast sort enabled.
+  /// ## Syntax
+  /// ```
+  /// BOOL Everything_IsFastSort(DWORD sortType);
+  /// ```
+  /// ## Parameters
+  ///
+  /// - *sortType*
+  ///   Can be one of the following:
+  ///
+  /// |  Code | Value | Description |
+  /// | --- | --- | --- |
+  /// |  EVERYTHING_IPC_SORT_NAME_ASCENDING | 1 | Name ascending |
+  /// |  EVERYTHING_IPC_SORT_NAME_DESCENDING  | 2 | Name descending |
+  /// |  EVERYTHING_IPC_SORT_PATH_ASCENDING  | 3 | Path ascending |
+  /// |  EVERYTHING_IPC_SORT_PATH_DESCENDING  | 4 | Path descending |
+  /// |  EVERYTHING_IPC_SORT_SIZE_ASCENDING  | 5 | Size ascending |
+  /// |  EVERYTHING_IPC_SORT_SIZE_DESCENDING  | 6 | Size descending |
+  /// |  EVERYTHING_IPC_SORT_EXTENSION_ASCENDING  | 7 | Extension ascending |
+  /// |  EVERYTHING_IPC_SORT_EXTENSION_DESCENDING  | 8 | Extension descending |
+  /// |  EVERYTHING_IPC_SORT_TYPE_NAME_ASCENDING  | 9 | Type name ascending |
+  /// |  EVERYTHING_IPC_SORT_TYPE_NAME_DESCENDING  | 10 | Type name descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_CREATED_ASCENDING  | 11 | Date created ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_CREATED_DESCENDING  | 12 | Date created descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_MODIFIED_ASCENDING  | 13 | Date modified ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_MODIFIED_DESCENDING  | 14 | Date modified descending |
+  /// |  EVERYTHING_IPC_SORT_ATTRIBUTES_ASCENDING  | 15 | Attributes ascending |
+  /// |  EVERYTHING_IPC_SORT_ATTRIBUTES_DESCENDING  | 16 | Attributes descending |
+  /// |  EVERYTHING_IPC_SORT_FILE_LIST_FILENAME_ASCENDING  | 17 | File list filename ascending |
+  /// |  EVERYTHING_IPC_SORT_FILE_LIST_FILENAME_DESCENDING  | 18 | File list filename descending |
+  /// |  EVERYTHING_IPC_SORT_RUN_COUNT_ASCENDING  | 19 | Run count ascending |
+  /// |  EVERYTHING_IPC_SORT_RUN_COUNT_DESCENDING  | 20 | Run count descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RECENTLY_CHANGED_ASCENDING | 21 | Recently changed ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RECENTLY_CHANGED_DESCENDING | 22 | Recently changed descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_ACCESSED_ASCENDING | 23 | Date accessed ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_ACCESSED_DESCENDING | 24 | Date accessed descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RUN_ASCENDING | 25 | Date run ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RUN_DESCENDING | 26 | Date run descending |
+  ///
+  ///
+  ///
+  /// ## Return Value
+  /// The function returns non-zero if the specified information is indexed and has fast sort enabled.
+  /// The function returns 0 if the specified information does not have fast sort enabled or if an error occurred. To get extended error information, call [Everything_GetLastError](/support/everything/sdk/everything_getlasterror).
+  ///
+  /// |  Error code | Meaning |
+  /// | --- | --- |
+  /// |  EVERYTHING_OK | The specified information does not have fast sort enabled. |
+  /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
+  ///
+  /// ## Remarks
+  /// The following sort types are always fast sort types:
+  ///
+  /// |  Code | Value | Description |
+  /// | --- | --- | --- |
+  /// |  EVERYTHING_IPC_SORT_NAME_ASCENDING | 1 | Name ascending |
+  /// |  EVERYTHING_IPC_SORT_NAME_DESCENDING  | 2 | Name descending |
+  /// |  EVERYTHING_IPC_SORT_RUN_COUNT_ASCENDING  | 19 | Run count ascending |
+  /// |  EVERYTHING_IPC_SORT_RUN_COUNT_DESCENDING  | 20 | Run count descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RECENTLY_CHANGED_ASCENDING | 21 | Recently changed ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RECENTLY_CHANGED_DESCENDING | 22 | Recently changed descending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RUN_ASCENDING | 25 | Date run ascending |
+  /// |  EVERYTHING_IPC_SORT_DATE_RUN_DESCENDING | 26 | Date run descending |
+  ///
+  /// ## Example
+  /// ```
+  /// BOOL isFastSizeSort;
+  ///
+  /// // Check if sorting by size descending will be instant.
+  /// isFastSizeSort = Everything_IsFastSort(EVERYTHING_IPC_SORT_SIZE_DESCENDING);
+  /// ```
+  /// ## See Also
+  ///
+  /// - [Everything_IsFileInfoIndexed](/support/everything/sdk/everything_isfileinfoindexed)
+  /// - [Enable or disable file information indexing](/support/everything/indexes/#size_dates_and_attributes_indexing)
+  /// - [Enable or disable fast sorting](/support/everything/indexes/#fast_sorting)
+  bool isFastSort(EverythingSort sortType);
+
+  /// The **Everything_IsFileInfoIndexed** function checks if the specified file information is indexed.
+  /// ## Syntax
+  /// ```
+  /// BOOL Everything_IsFileInfoIndexed(DWORD fileInfoType);
+  /// ```
+  /// ## Parameters
+  ///
+  /// - *fileInfoType*
+  ///   Can be one of the following:
+  ///
+  /// |  Code | Value | Description |
+  /// | --- | --- | --- |
+  /// |  EVERYTHING_IPC_FILE_INFO_FILE_SIZE | 1 | File size |
+  /// |  EVERYTHING_IPC_FILE_INFO_FOLDER_SIZE | 2 | Folder size |
+  /// |  EVERYTHING_IPC_FILE_INFO_DATE_CREATED | 3 | Date created |
+  /// |  EVERYTHING_IPC_FILE_INFO_DATE_MODIFIED | 4 | Date modified |
+  /// |  EVERYTHING_IPC_FILE_INFO_DATE_ACCESSED | 5 | Date accessed |
+  /// |  EVERYTHING_IPC_FILE_INFO_ATTRIBUTES | 6 | Attributes |
+  ///
+  ///
+  ///
+  /// ## Return Value
+  /// The function returns non-zero if the specified information is indexed.
+  /// The function returns 0 if the specified information is not indexed or if an error occurred. To get extended error information, call [Everything_GetLastError](/support/everything/sdk/everything_getlasterror).
+  ///
+  /// |  Error code | Meaning |
+  /// | --- | --- |
+  /// |  EVERYTHING_OK | The specified information is not indexed. |
+  /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
+  ///
+  /// ## Example
+  /// ```
+  /// BOOL isSizeIndexed;
+  ///
+  /// isSizeIndexed = Everything_IsFileInfoIndexed(EVERYTHING_IPC_FILE_INFO_FILE_SIZE);
+  /// ```
+  /// ## See Also
+  ///
+  /// - [Everything_IsFastSort](/support/everything/sdk/everything_isfastsort)
+  /// - [Enable or disable file information indexing](/support/everything/indexes/#size_dates_and_attributes_indexing)
+  /// - [Enable or disable fast sorting](/support/everything/indexes/#fast_sorting)
+  bool isFileInfoIndexed(FileInfoIndexed fileInfoType);
+
+  /// The **Everything_SetMax** function sets the maximum number of results to return from [Everything_Query](/support/everything/sdk/everything_query).
   /// ## Syntax
   /// ```
   /// void Everything_SetMax(
@@ -1060,7 +1183,7 @@ abstract class EverythingApi {
   /// - [Everything_SetReplyWindow](/support/everything/sdk/everything_setreplywindow)
   /// - [Everything_SetReplyID](/support/everything/sdk/everything_setreplyid)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
-  int query(bool wait);
+  bool query(bool wait);
 
   /// The **Everything_IsQueryReply** function checks if the specified window message is a query reply.
   /// ## Syntax
@@ -1136,7 +1259,7 @@ abstract class EverythingApi {
   /// - [Everything_SetReplyID](/support/everything/sdk/everything_setreplyid)
   /// - [Everything_GetReplyWindow](/support/everything/sdk/everything_getreplywindow)
   /// - [Everything_GetReplyID](/support/everything/sdk/everything_getreplyid)
-  int isQueryReply(int message, int wParam, int lParam, int dwId);
+  bool isQueryReply(int message, int wParam, int lParam, int dwId);
 
   /// The **Everything_SortResultsByPath** function sorts the current results by path, then file name.
   /// SortResultsByPath is CPU Intensive. Sorting by path can take several seconds.
@@ -1771,8 +1894,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_GetResultFileName](/support/everything/sdk/everything_getresultfilename)
   /// - [Everything_GetResultPath](/support/everything/sdk/everything_getresultpath)
-  String getResultFullPathName(int dwIndex,
-      {int len = 260, ffi.Allocator allocator = malloc});
+  String getResultFullPathName(int dwIndex, {int len = 260, ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultExtension** function retrieves the extension part of a visible result.
   /// ## Syntax
@@ -1915,8 +2037,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateCreated(int dwIndex,
-      {ffi.Allocator allocator = malloc});
+  DateTime getResultDateCreated(int dwIndex, {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultDateModified** function retrieves the modified date of a visible result.
   /// ## Syntax
@@ -1965,8 +2086,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateModified(int dwIndex,
-      {ffi.Allocator allocator = malloc});
+  DateTime getResultDateModified(int dwIndex, {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultDateAccessed** function retrieves the accessed date of a visible result.
   /// ## Syntax
@@ -2015,8 +2135,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateAccessed(int dwIndex,
-      {ffi.Allocator allocator = malloc});
+  DateTime getResultDateAccessed(int dwIndex, {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultAttributes** function retrieves the attributes of a visible result.
   /// ## Syntax
@@ -2128,7 +2247,7 @@ abstract class EverythingApi {
   ///
   /// |  Error code | Meaning |
   /// | --- | --- |
-  /// |  EVERYTHING_ERROR_SUCCESS | The run count is 0. |
+  /// |  EVERYTHING_OK | The run count is 0. |
   /// |  EVERYTHING_ERROR_INVALIDCALL | Call [Everything_Query](/support/everything/sdk/everything_query) before calling Everything_GetResultRunCount. |
   /// |  EVERYTHING_ERROR_INVALIDREQUEST | Run count information was not requested or is unavailable, Call [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags) with EVERYTHING_REQUEST_RUN_COUNT before calling [Everything_Query](/support/everything/sdk/everything_query). |
   /// |  EVERYTHING_ERROR_INVALIDINDEX | index must be greater than or equal to 0 and less than the visible number of results. |
@@ -2252,8 +2371,7 @@ abstract class EverythingApi {
   /// - [Everything_Query](/support/everything/sdk/everything_query)
   /// - [Everything_Reset](/support/everything/sdk/everything_reset)
   /// - [Everything_SetRequestFlags](/support/everything/sdk/everything_setrequestflags)
-  DateTime getResultDateRecentlyChanged(int dwIndex,
-      {ffi.Allocator allocator = malloc});
+  DateTime getResultDateRecentlyChanged(int dwIndex, {ffi.Allocator allocator = malloc});
 
   /// The **Everything_GetResultHighlightedFileName** function retrieves the highlighted file name part of the visible result.
   /// ## Syntax
@@ -2415,7 +2533,7 @@ abstract class EverythingApi {
   ///
   /// |  Error code | Meaning |
   /// | --- | --- |
-  /// |  EVERYTHING_ERROR_SUCCESS | The run count is 0. |
+  /// |  EVERYTHING_OK | The run count is 0. |
   /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
   ///
   /// ## Example
@@ -2470,7 +2588,7 @@ abstract class EverythingApi {
   ///
   /// - [Everything_GetRunCountFromFileName](/support/everything/sdk/everything_getruncountfromfilename)
   /// - [Everything_IncRunCountFromFileName](/support/everything/sdk/everything_incruncountfromfilename)
-  int setRunCountFromFileName(String fileName, int count);
+  bool setRunCountFromFileName(String fileName, int count);
 
   /// The **Everything_IncRunCountFromFileName** function increments the run count by one for a specified file in the Everything by file name.
   /// ## Syntax
@@ -2601,7 +2719,11 @@ abstract class EverythingApi {
   /// Everything_Exit();
   /// ```
   /// ## See Also
-  void exit();
+  bool exit();
+
+  int msiExitAndStopService(ffi.Pointer<ffi.Void> msihandle);
+
+  int msiStartService(ffi.Pointer<ffi.Void> msihandle);
 
   /// The **Everything_IsAdmin** function checks if Everything is running as administrator or as a standard user.
   /// ## Syntax
@@ -2619,7 +2741,7 @@ abstract class EverythingApi {
   ///
   /// |  Error code | Meaning |
   /// | --- | --- |
-  /// |  EVERYTHING_ERROR_SUCCESS | Everything is running as a standard user. |
+  /// |  EVERYTHING_OK | Everything is running as a standard user. |
   /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
   ///
   /// ## Example
@@ -2631,7 +2753,7 @@ abstract class EverythingApi {
   /// ## See Also
   ///
   /// - [Everything_IsAppData](/support/everything/sdk/everything_isappdata)
-  void isAdmin();
+  bool isAdmin();
 
   /// The **Everything_IsAppData** function checks if Everything is saving settings and data to %APPDATA%\Everything or to the same location as the Everything.exe.
   /// ## Syntax
@@ -2649,7 +2771,7 @@ abstract class EverythingApi {
   ///
   /// |  Error code | Meaning |
   /// | --- | --- |
-  /// |  EVERYTHING_ERROR_SUCCESS | Settings and data are stored in the same location as the Everything.exe. |
+  /// |  EVERYTHING_OK | Settings and data are stored in the same location as the Everything.exe. |
   /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
   ///
   /// ## Example
@@ -2661,7 +2783,7 @@ abstract class EverythingApi {
   /// ## See Also
   ///
   /// - [Everything_IsAdmin](/support/everything/sdk/everything_isadmin)
-  void isAppData();
+  bool isAppData();
 
   /// The **Everything_IsDBLoaded** function checks if the database has been fully loaded.
   /// ## Syntax
@@ -2679,7 +2801,7 @@ abstract class EverythingApi {
   ///
   /// |  Error code | Meaning |
   /// | --- | --- |
-  /// |  EVERYTHING_ERROR_SUCCESS | The database is still loading. |
+  /// |  EVERYTHING_OK | The database is still loading. |
   /// |  EVERYTHING_ERROR_IPC | Please make sure the Everything search client is running in the background. |
   ///
   /// ## Remarks
@@ -2710,7 +2832,7 @@ abstract class EverythingApi {
   /// ## See Also
   ///
   /// - [Everything_Query](/support/everything/sdk/everything_query)
-  void isDBLoaded();
+  bool isDBLoaded();
 
   /// The **Everything_RebuildDB** function requests Everything to forcefully rebuild the Everything index.
   /// ## Syntax
@@ -2741,7 +2863,7 @@ abstract class EverythingApi {
   /// ## See Also
   ///
   /// - [Everything_IsDBLoaded](/support/everything/sdk/everything_isdbloaded)
-  void rebuildDB();
+  bool rebuildDB();
 
   /// The **Everything_UpdateAllFolderIndexes** function requests Everything to rescan all folder indexes.
   /// ## Syntax
@@ -2769,7 +2891,7 @@ abstract class EverythingApi {
   /// Everything_UpdateAllFolderIndexes();
   /// ```
   /// ## See Also
-  void updateAllFolderIndexes();
+  bool updateAllFolderIndexes();
 
   /// The **Everything_SaveDB** function requests Everything to save the index to disk.
   /// ## Syntax
@@ -2798,7 +2920,7 @@ abstract class EverythingApi {
   /// Everything_SaveDB();
   /// ```
   /// ## See Also
-  void saveDB();
+  bool saveDB();
 
   /// The **Everything_SaveRunHistory** function requests Everything to save the run history to disk.
   /// ## Syntax
@@ -2827,7 +2949,7 @@ abstract class EverythingApi {
   /// Everything_SaveRunHistory();
   /// ```
   /// ## See Also
-  void saveRunHistory();
+  bool saveRunHistory();
 
   /// The **Everything_DeleteRunHistory** function deletes all run history.
   /// ## Syntax
@@ -2859,5 +2981,6 @@ abstract class EverythingApi {
   /// - [Everything_GetRunCountFromFileName](/support/everything/sdk/everything_getruncountfromfilename)
   /// - [Everything_SetRunCountFromFileName](/support/everything/sdk/everything_setruncountfromfilename)
   /// - [Everything_IncRunCountFromFileName](/support/everything/sdk/everything_incruncountfromfilename)
-  void deleteRunHistory();
+  bool deleteRunHistory();
+
 }

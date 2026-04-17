@@ -30,6 +30,28 @@ Future<TitleMap> getTitleMap() async {
   return titleMap;
 }
 
+Future<TitleMap> getTitleMapFromWikiNav() async {
+  final TitleMap titleMap = {};
+
+  final wikicontent = await getWikiContentFromUrl(
+    'support/everything/sdk/',
+    '*.wikinav',
+  );
+  final pageLinkList = wikicontent.querySelectorAll('li.wikinavindent3 p a');
+  final LinkMap linkMap = {};
+  titleMap['SDK'] = linkMap;
+  for (final pageLink in pageLinkList) {
+    debug('## ${pageLink.text}');
+    if (!pageLink.text.contains('Everything_')) continue;
+    var link = pageLink.attributes['href'];
+    if (link != null) {
+      linkMap[pageLink.text] = link;
+    }
+  }
+  // debug(titleMap);
+  return titleMap;
+}
+
 LinkMap getApi(TitleMap map) {
   final LinkMap linkMap = {};
   for (final kv in map.entries) {

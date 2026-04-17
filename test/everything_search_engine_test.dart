@@ -1,3 +1,4 @@
+
 import 'package:everything_search_engine/everything_search_engine.dart';
 import 'package:test/test.dart';
 
@@ -16,9 +17,7 @@ void main() async {
           isRegex: true,
           // isMatchCase: false,
           // isMatchWholeWord: false,
-          requestFlags: RequestFlags(
-            dateCreated: true,
-          ),
+          requestFlags: RequestFlags(dateCreated: true),
           sort: EverythingSort.dateCreatedDescending,
           max: 20,
           offset: 0,

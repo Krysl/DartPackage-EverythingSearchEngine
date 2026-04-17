@@ -1,112 +1,145 @@
+import 'package:meta/meta.dart';
+
 import '../ffi/everything.dart';
 import '../ffi/file_attribute.dart';
 import '../ffi/request_flags.dart';
 import '../ffi/sort.dart';
 
 /// to save result item
+@immutable
 class ResultItem {
   /// result is a volume.
-  late final bool? isVolumn;
+  final bool? isVolumn;
 
   /// result is a folder.
-  late final bool? isFolder;
+  final bool? isFolder;
 
   /// result is a file.
-  late final bool? isFile;
+  final bool? isFile;
 
   /// get result using [Everything.getResultFileName]
-  late final String? filename;
+  final String? filename;
 
   /// get result using [Everything.getResultPath]
-  late final String? path;
+  final String? path;
 
   /// get result using [Everything.getResultFullPathName]
-  late final String? extension;
+  final String? extension;
 
   /// get result using [Everything.getResultExtension]
-  late final String? fullPathName;
+  final String? fullPathName;
 
   /// get result using [Everything.getResultSize]
-  late final int? size;
+  final int? size;
 
   /// get result using [Everything.getResultDateCreated]
-  late final DateTime? dateCreated;
+  final DateTime? dateCreated;
 
   /// get result using [Everything.getResultDateModified]
-  late final DateTime? dateModified;
+  final DateTime? dateModified;
 
   /// get result using [Everything.getResultDateAccessed]
-  late final DateTime? dateAccessed;
+  final DateTime? dateAccessed;
 
   /// get result using [Everything.getResultDateRecentlyChanged]
-  late final DateTime? dateRecentlyChanged;
+  final DateTime? dateRecentlyChanged;
 
   /// get result using [Everything.getResultDateRun]
-  late final DateTime? dateRun;
+  final DateTime? dateRun;
 
   /// get result using [Everything.getResultAttributes]
-  late final FileAttribute? attributes;
+  final FileAttribute? attributes;
 
   /// get result using [Everything.getResultFileListFileName]
-  late final String? fileListFileName;
+  final String? fileListFileName;
 
   /// get result using [Everything.getResultRunCount]
-  late final int? runCount;
+  final int? runCount;
 
   /// get result using [Everything.getResultHighlightedFileName]
-  late final String? highlightedFileName;
+  final String? highlightedFileName;
 
   /// get result using [Everything.getResultHighlightedPath]
-  late final String? highlightedPath;
+  final String? highlightedPath;
 
   /// get result using [Everything.getResultHighlightedFullPathAndFileName]
-  late final String? highlightedFullPathAndFileName;
+  final String? highlightedFullPathAndFileName;
+
+  const ResultItem._({
+    this.isVolumn,
+    this.isFolder,
+    this.isFile,
+    this.filename,
+    this.path,
+    this.extension,
+    this.fullPathName,
+    this.size,
+    this.dateCreated,
+    this.dateModified,
+    this.dateAccessed,
+    this.dateRecentlyChanged,
+    this.dateRun,
+    this.attributes,
+    this.fileListFileName,
+    this.runCount,
+    this.highlightedFileName,
+    this.highlightedPath,
+    this.highlightedFullPathAndFileName,
+  });
 
   /// get result items using [RequestFlags]
-  ResultItem.fromRequestFlags(
+  factory ResultItem.fromRequestFlags(Everything e, RequestFlags flags, int index) {
+    final kind = _resolveKind(e, flags, index);
+
+    return ResultItem._(
+      isVolumn: kind.isVolumn,
+      isFolder: kind.isFolder,
+      isFile: kind.isFile,
+      filename: flags.fileName ? e.getResultFileName(index) : null,
+      path: flags.path ? e.getResultPath(index) : null,
+      fullPathName: flags.fullPathAndFileName
+          ? e.getResultFullPathName(index)
+          : null,
+      extension: flags.extension ? e.getResultExtension(index) : null,
+      size: flags.size ? e.getResultSize(index) : null,
+      dateCreated: flags.dateCreated ? e.getResultDateCreated(index) : null,
+      dateModified: flags.dateModified ? e.getResultDateModified(index) : null,
+      dateAccessed: flags.dateAccessed ? e.getResultDateAccessed(index) : null,
+      attributes: flags.attributes ? e.getResultAttributes(index) : null,
+      fileListFileName: flags.fileListFileName
+          ? e.getResultFileListFileName(index)
+          : null,
+      runCount: flags.runCount ? e.getResultRunCount(index) : null,
+      dateRun: flags.dateRun ? e.getResultDateRun(index) : null,
+      dateRecentlyChanged: flags.dateRecentlyChanged
+          ? e.getResultDateRecentlyChanged(index)
+          : null,
+      highlightedFileName: flags.highlightedFileName
+          ? e.getResultHighlightedFileName(index)
+          : null,
+      highlightedPath: flags.highlightedPath
+          ? e.getResultHighlightedPath(index)
+          : null,
+      highlightedFullPathAndFileName: flags.highlightedFullPathAndFileName
+          ? e.getResultHighlightedFullPathAndFileName(index)
+          : null,
+    );
+  }
+
+  static ({bool? isVolumn, bool? isFolder, bool? isFile}) _resolveKind(
     Everything e,
     RequestFlags flags,
     int index,
   ) {
-    if (flags.kind) {
-      final isFile_ = e.isFileResult(index);
-      isFile = isFile_;
-      if (isFile_) {
-        isVolumn = false;
-        isFolder = false;
-      } else {
-        final isFolder_ = e.isFolderResult(index);
-        isFolder = isFolder_;
-        if (!isFolder_) {
-          isVolumn = e.isVolumeResult(index);
-        }
-      }
+    if (!flags.kind) {
+      return (isVolumn: null, isFolder: null, isFile: null);
     }
-    filename = flags.fileName ? e.getResultFileName(index) : null;
-    path = flags.path ? e.getResultPath(index) : null;
-    fullPathName =
-        flags.fullPathAndFileName ? e.getResultFullPathName(index) : null;
-    extension = flags.extension ? e.getResultExtension(index) : null;
-    size = flags.size ? e.getResultSize(index) : null;
-    dateCreated = flags.dateCreated ? e.getResultDateCreated(index) : null;
-    dateModified = flags.dateModified ? e.getResultDateModified(index) : null;
-    dateAccessed = flags.dateAccessed ? e.getResultDateAccessed(index) : null;
-    attributes = flags.attributes ? e.getResultAttributes(index) : null;
-    fileListFileName =
-        flags.fileListFileName ? e.getResultFileListFileName(index) : null;
-    runCount = flags.runCount ? e.getResultRunCount(index) : null;
-    dateRun = flags.dateRun ? e.getResultDateRun(index) : null;
-    dateRecentlyChanged = flags.dateRecentlyChanged
-        ? e.getResultDateRecentlyChanged(index)
-        : null;
-    highlightedFileName = flags.highlightedFileName
-        ? e.getResultHighlightedFileName(index)
-        : null;
-    highlightedPath =
-        flags.highlightedPath ? e.getResultHighlightedPath(index) : null;
-    highlightedFullPathAndFileName = flags.highlightedFullPathAndFileName
-        ? e.getResultHighlightedFullPathAndFileName(index)
-        : null;
+
+    final isFile = e.isFileResult(index);
+    final isFolder = !isFile && e.isFolderResult(index);
+    final isVolumn = !isFile && !isFolder && e.isVolumeResult(index);
+
+    return (isVolumn: isVolumn, isFolder: isFolder, isFile: isFile);
   }
   @override
   String toString() {
@@ -136,7 +169,8 @@ class ResultItem {
     }
     if (highlightedFullPathAndFileName != null) {
       strbuf.write(
-          'highlightedFullPathAndFileName: $highlightedFullPathAndFileName, ');
+        'highlightedFullPathAndFileName: $highlightedFullPathAndFileName, ',
+      );
     }
 
     return strbuf.toString();
@@ -144,6 +178,7 @@ class ResultItem {
 }
 
 /// store results
+@immutable
 class Results {
   /// [Everything.numFileResults]
   final int fileNum;
@@ -173,7 +208,7 @@ class Results {
   final List<ResultItem> items;
 
   /// create Results
-  const Results({
+  Results({
     required this.fileNum,
     required this.folderNum,
     required this.resultsNum,
@@ -182,6 +217,6 @@ class Results {
     required this.totResultsNum,
     required this.requestFlags,
     required this.sort,
-    required this.items,
-  });
+    required List<ResultItem> items,
+  }) : items = List.unmodifiable(items);
 }

@@ -1,12 +1,9 @@
-import 'file_attribute_constants.dart';
+import 'package:win32/win32.dart';
 
 /// https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
-class FileAttribute {
+extension type const FileAttribute(int _) implements int {
   /// C value
-  int val;
-
-  /// create FileAttribute using C value
-  FileAttribute(this.val);
+  int get val => _;
 
   /// A file or directory that is an archive file or directory. Applications typically use this attribute to mark files for backup or removal .
   bool get isFileAttributeArchive => (val & FILE_ATTRIBUTE_ARCHIVE) != 0;

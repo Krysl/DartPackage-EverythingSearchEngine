@@ -2,14 +2,13 @@
 
 // Copyright (c) 2022 Krysl
 
-/// Automatically generate index / everything_search_engine / library files
-/// with all the export needed for your library.
-library everything_search_engine;
+// Automatically generate index / everything_search_engine / library files
+// with all the export needed for your library.
 
+export 'src/assets/assets.gen.dart';
 export 'src/ffi/error.dart';
 export 'src/ffi/everything.dart';
 export 'src/ffi/file_attribute.dart';
-export 'src/ffi/file_attribute_constants.dart';
 export 'src/ffi/request_flags.dart';
 export 'src/ffi/sort.dart';
 export 'src/ffi/string.dart';

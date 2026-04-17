@@ -1,1 +1,0 @@
-dart doc . > doc.log 2>&1

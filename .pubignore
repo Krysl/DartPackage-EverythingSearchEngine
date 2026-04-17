@@ -6,3 +6,5 @@ index_generator.yaml
 tool/
 /*.log
 /build/
+justfile
+.vscode/
