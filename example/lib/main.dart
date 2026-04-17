@@ -1,10 +1,7 @@
 import 'package:everything_search_engine/everything_search_engine.dart';
 
 Future<void> main() async {
-  /// `await Everything.ensureInited()` must be called before `Everything.fromDefaultLibraryPath()` unless you use your own dll library
-  await Everything.ensureInited();
-
-  final everything = Everything.fromDefaultLibraryPath();
+  final everything = const Everything();
 
   final results = everything.runQuery(
     const Query(

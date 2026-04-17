@@ -74,11 +74,14 @@ abstract interface class EverythingApi {
 ''';
 const end = '}';
 
-const excludeFunction = [
-  'runQuery',
-  '_getFileTime',
-  'setQuery',
-];
+const excludeFunction = ['runQuery', '_getFileTime', 'setQuery'];
+
+//TODO: msiExitAndStopService & msiStartService are marked as `'no longer used, remove.'` by sdk author
+const extraMemberComments = <String, List<String>>{
+  'msiExitAndStopService': ['// ignore: public_member_api_docs'],
+  'msiStartService': ['// ignore: public_member_api_docs'],
+};
+
 Future<void> patchFile(Map<String, Doc> docsMap) async {
   final dstFile = File(dstFilePath);
   final strbuf = StringBuffer();
@@ -93,6 +96,15 @@ Future<void> patchFile(Map<String, Doc> docsMap) async {
 
     final doc = getDoc(docsMap, member);
     if (doc != null) strbuf.writeln(doc);
+
+    for (final metadata in member.metadata) {
+      final source = metadata.toSource();
+      if (source == '@override') continue;
+      strbuf.writeln('  $source');
+    }
+    for (final comment in extraMemberComments[name] ?? const <String>[]) {
+      strbuf.writeln('  $comment');
+    }
 
     strbuf.write('  ');
     if (member.externalKeyword != null) strbuf.write('external ');

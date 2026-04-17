@@ -90,5 +90,8 @@ comments:
   style: any
   length: full
 
+ffi-native:
+  asset-id: 'package:everything_search_engine/src/ffi/everything.g.dart'
+
 preamble: |
   // ignore_for_file: camel_case_types, non_constant_identifier_names, constant_identifier_names, prefer_expression_function_bodies, public_member_api_docs

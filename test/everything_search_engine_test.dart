@@ -1,12 +1,10 @@
-
 import 'package:everything_search_engine/everything_search_engine.dart';
 import 'package:test/test.dart';
 
 void main() async {
   late Everything everything;
   setUpAll(() async {
-    await Everything.ensureInited();
-    everything = Everything.fromDefaultLibraryPath();
+    everything = const Everything();
   });
   group('ffi test', () {
     test('query', () {

@@ -1,3 +1,12 @@
+## 0.3.0
+* switch native DLL integration to Dart native assets using hooks and code_assets
+  * runtime loading no longer depends on manual path initialization or DLL copying
+  * simplify the public entry point to direct construction with Everything()
+* improve generated SDK documentation and hover information
+  * add SDK help links on the Everything wrapper
+  * let doc generation preserve deprecation metadata for legacy MSI helpers
+* update example and README to match the new loading model
+
 ## 0.2.1
 * using `dart format .` to format code
 

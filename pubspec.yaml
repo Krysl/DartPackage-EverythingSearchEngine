@@ -1,6 +1,6 @@
 name: everything_search_engine
 description: A package that wraps Everything SDK API calls using FFI to make them accessible to Dart code.
-version: 0.2.2
+version: 0.3.0
 repository: https://github.com/Krysl/DartPackage-EverythingSearchEngine
 issue_tracker: https://github.com/Krysl/DartPackage-EverythingSearchEngine/issues
 
@@ -11,7 +11,9 @@ environment:
   sdk: ^3.11.4
 
 dependencies:
+  code_assets: ^1.0.0
   ffi: ^2.0.1
+  hooks: ^1.0.2
   meta: ^1.7.0
   package_config: ^2.0.0
   path: ^1.8.1
@@ -36,11 +38,8 @@ dev_dependencies:
 flutter:
   # To add assets to your package, add an assets section, like this:
   assets:
-  #   #   - images/a_dot_burr.jpeg
-  #   #   - images/a_dot_ham.jpeg
-  #   - thirdparty/dll/Everything64.dll
+  # Native DLLs are bundled through hook/build.dart.
     - assets/icon/
-    - thirdparty/dll/
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

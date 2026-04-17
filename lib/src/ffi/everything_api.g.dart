@@ -2721,8 +2721,12 @@ abstract interface class EverythingApi {
   /// ## See Also
   bool exit();
 
+  @Deprecated('no longer used, remove.')
+  // ignore: public_member_api_docs
   int msiExitAndStopService(ffi.Pointer<ffi.Void> msihandle);
 
+  @Deprecated('no longer used, remove.')
+  // ignore: public_member_api_docs
   int msiStartService(ffi.Pointer<ffi.Void> msihandle);
 
   /// The **Everything_IsAdmin** function checks if Everything is running as administrator or as a standard user.

@@ -1,14 +1,8 @@
 // ignore_for_file: avoid_positional_boolean_parameters
 
-import 'dart:async';
-
 import 'dart:ffi' as ffi;
-import 'dart:io';
-import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:package_config/package_config.dart';
-import 'package:path/path.dart' as path;
 
 import '../query/query.dart';
 import '../query/results.dart';
@@ -45,176 +39,33 @@ extension FileTImeHelper on FILETIME {
   );
 }
 
-/// A class that wrap everything sdk's api
+/// High-level Dart wrapper for the Voidtools Everything SDK.
+///
+/// This wrapper uses Dart native assets and the bundled prebuilt library
+/// selected by the runtime, so no manual DLL loading or initialization is
+/// required.
+///
+/// Help and reference:
+/// - English (US): https://www.voidtools.com/en-us/support/everything/sdk/
+/// - 简体中文: https://www.voidtools.com/zh-cn/support/everything/sdk/
+/// - All supported languages: https://www.voidtools.com/language/
+/// - Offline help: https://www.voidtools.com/Everything.chm.zip
 class Everything implements EverythingApi {
-  final EverythingBase _;
+  /// Creates an SDK wrapper backed by the runtime-resolved native asset.
+  const Everything();
 
-  static bool _inited = false;
-
-  /// get the default library's path
-  static String get defaultLibraryPath => _libraryPath;
-  static late final String _libraryPath;
-
-  /// Returns the bundled DLL name for the current or supplied Windows ABI.
-  static String dllFileNameForAbi({
-    ffi.Abi? abi,
-    Map<String, String>? environment,
+  T _withLpcwstr<T>(
+    String value,
+    T Function(LPCWSTR pointer) action, {
+    ffi.Allocator allocator = malloc,
   }) {
-    if (abi != null) {
-      switch (abi) {
-        case ffi.Abi.windowsIA32:
-          return 'Everything32.dll';
-        case ffi.Abi.windowsX64:
-          return 'Everything64.dll';
-        case ffi.Abi.windowsArm64:
-          return 'EverythingARM64.dll';
-        default:
-          break;
-      }
-    }
-
-    final env = environment ?? Platform.environment;
-    final architecture =
-        '${env['PROCESSOR_ARCHITECTURE'] ?? ''} ${env['PROCESSOR_ARCHITEW6432'] ?? ''}'
-            .toLowerCase();
-    if (architecture.contains('arm64') || architecture.contains('aarch64')) {
-      return 'EverythingARM64.dll';
-    }
-    if (architecture.contains('arm')) {
-      return 'EverythingARM.dll';
-    }
-    if (architecture.contains('64')) {
-      return 'Everything64.dll';
-    }
-    return 'Everything32.dll';
-  }
-
-  static String _ensureInitedLibraryPath() {
-    assert(
-      _inited == true,
-      'default libary path not inited. please run `await Everything.libraryPathInit();` first.',
-    );
-    return _libraryPath;
-  }
-
-  /// ensure inited Everything's library path
-  static Future<void> ensureInited([bool? isInTest]) async {
-    bool inTest = isInTest ?? false;
-    if (isInTest == null) {
-      assert(() {
-        inTest = true;
-        return true;
-      }());
-    }
-    if (inTest) {
-      await _libraryPathInitTest();
-    } else {
-      if (_inited) return;
-      final dir = path.dirname(Platform.resolvedExecutable);
-      final dllFileName = dllFileNameForAbi();
-      final dllPath =
-          'packages/everything_search_engine/thirdparty/dll/$dllFileName';
-      final libraryPath = path.join(dir, 'data/flutter_assets', dllPath);
-      if (File(libraryPath).existsSync()) {
-        _libraryPath = libraryPath;
-      } else {
-        await _libraryPathInitTest();
-      }
-      _inited = true;
-    }
-  }
-
-  static Future<void> _libraryPathInitTest() async {
-    if (_inited) return;
-    final dllFileName = dllFileNameForAbi();
-    final packageUri = Uri.parse('package:everything_search_engine/');
-    Uri? absoluteUri;
-
+    final pointer = value.toLPCWSTR(allocator: allocator);
     try {
-      final future = Isolate.resolvePackageUri(packageUri);
-      const timeout = Duration(seconds: 5);
-      absoluteUri = await future.timeout(timeout);
-      // ignore: avoid_catching_errors
-    } on UnsupportedError catch (_) {
-      // ignore: avoid_print
-      print('''
-executable:${Platform.resolvedExecutable}
-arguments:${Platform.executableArguments}
-current:${Directory.current}
-''');
-      String packageConfigPath = '';
-      if (path.basenameWithoutExtension(Platform.resolvedExecutable) ==
-          'flutter_tester') {
-        const packagesPrefix = '--packages=';
-        packageConfigPath = Platform.executableArguments
-            .firstWhere(
-              (arg) => arg.startsWith(packagesPrefix),
-              orElse: () => '',
-            )
-            .replaceFirst(packagesPrefix, '');
-        if (packageConfigPath.isNotEmpty) {
-          final packageConfig = await loadPackageConfig(
-            File(packageConfigPath),
-          );
-          absoluteUri = packageConfig.resolve(packageUri);
-        } else {
-          rethrow;
-        }
-      } else {
-        final packageConfig = await findPackageConfig(Directory.current);
-        absoluteUri = packageConfig?.resolve(packageUri);
-        if (absoluteUri == null) rethrow;
-      }
+      return action(pointer);
+    } finally {
+      allocator.free(pointer);
     }
-
-    final candidatePaths = <String>{
-      if (absoluteUri != null)
-        path.join(
-          File.fromUri(absoluteUri).parent.path,
-          'thirdparty',
-          'dll',
-          dllFileName,
-        ),
-      path.join(Directory.current.path, 'lib', 'src', 'dll', dllFileName),
-      path.join(Directory.current.path, 'thirdparty', 'dll', dllFileName),
-    };
-
-    for (final candidatePath in candidatePaths) {
-      final file = File(candidatePath);
-      if (file.existsSync()) {
-        _libraryPath = file.path;
-        _inited = true;
-        return;
-      }
-    }
-
-    throw StateError(
-      'Unable to locate $dllFileName. Put it under lib/src/dll or thirdparty/dll.',
-    );
   }
-
-  /// The symbols are looked up in [dynamicLibrary].
-  Everything(ffi.DynamicLibrary dynamicLibrary)
-    : _ = EverythingBase(dynamicLibrary);
-
-  /// init using built-in library's path
-  factory Everything.fromLibraryPath(String libraryPath) {
-    assert(
-      File(libraryPath).existsSync(),
-      'file $libraryPath not exist in ${Directory.current}',
-    );
-    return Everything(ffi.DynamicLibrary.open(libraryPath));
-  }
-
-  /// init using internal library's path
-  factory Everything.fromDefaultLibraryPath() => Everything.fromLibraryPath(
-    path.normalize(path.join(_ensureInitedLibraryPath())),
-  );
-
-  /// The symbols are looked up with [lookup].
-  Everything.fromLookup(
-    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
-  ) : _ = EverythingBase.fromLookup(lookup);
 
   void _checkLastError(int ret, [String? msg]) {
     final err = EverythingErrorCode.fromVal(ret);
@@ -227,126 +78,126 @@ current:${Directory.current}
   /* API */
   /* version */
   @override
-  int get majorVersion => _.GetMajorVersion();
+  int get majorVersion => GetMajorVersion();
   @override
-  int get minorVersion => _.GetMinorVersion();
+  int get minorVersion => GetMinorVersion();
   @override
-  int get revision => _.GetRevision();
+  int get revision => GetRevision();
   @override
-  int get buildNumber => _.GetBuildNumber();
+  int get buildNumber => GetBuildNumber();
   @override
   EverythingTargetMachine get targetMachine =>
-      EverythingTargetMachine.fromVal(_.GetTargetMachine());
+      EverythingTargetMachine.fromVal(GetTargetMachine());
   /* search */
   @override
-  set search(String lpString) => _.SetSearchW(lpString.toLPCWSTR());
+  set search(String lpString) => _withLpcwstr(lpString, SetSearchW);
   @override
-  String get search => _.GetSearchW().toDartString();
+  String get search => GetSearchW().toDartString();
 
   @override
-  int get lastError => _.GetLastError();
+  int get lastError => GetLastError();
 
   /* search mode */
   @override
-  set matchCase(bool bEnable) => _.SetMatchCase(bEnable.toInt);
+  set matchCase(bool bEnable) => SetMatchCase(bEnable.toInt);
   @override
-  bool get matchCase => _.GetMatchCase() != 0;
+  bool get matchCase => GetMatchCase() != 0;
 
   @override
-  set matchWholeWord(bool bEnable) => _.SetMatchWholeWord(bEnable.toInt);
+  set matchWholeWord(bool bEnable) => SetMatchWholeWord(bEnable.toInt);
   @override
-  bool get matchWholeWord => _.GetMatchWholeWord() != 0;
+  bool get matchWholeWord => GetMatchWholeWord() != 0;
 
   @override
-  set matchPath(bool bEnable) => _.SetMatchPath(bEnable.toInt);
+  set matchPath(bool bEnable) => SetMatchPath(bEnable.toInt);
   @override
-  bool get matchPath => _.GetMatchPath() != 0;
+  bool get matchPath => GetMatchPath() != 0;
 
   @override
-  set regex(bool bEnable) => _.SetRegex(bEnable.toInt);
+  set regex(bool bEnable) => SetRegex(bEnable.toInt);
   @override
-  bool get regex => _.GetRegex() != 0;
+  bool get regex => GetRegex() != 0;
 
   @override
-  bool isFastSort(EverythingSort sortType) => _.IsFastSort(sortType.val) != 0;
+  bool isFastSort(EverythingSort sortType) => IsFastSort(sortType.val) != 0;
 
   @override
   bool isFileInfoIndexed(FileInfoIndexed fileInfoType) =>
-      _.IsFileInfoIndexed(fileInfoType.value) != 0;
+      IsFileInfoIndexed(fileInfoType.value) != 0;
   /*  */
   @override
-  set max(int max) => _.SetMax(max);
+  set max(int max) => SetMax(max);
   @override
-  int get max => _.GetMax();
+  int get max => GetMax();
 
   @override
-  set offset(int offset) => _.SetOffset(offset);
+  set offset(int offset) => SetOffset(offset);
   @override
-  int get offset => _.GetOffset();
+  int get offset => GetOffset();
 
   @override
-  set replyWindow(HWND hWnd) => _.SetReplyWindow(hWnd);
+  set replyWindow(HWND hWnd) => SetReplyWindow(hWnd);
   @override
-  HWND get replyWindow => _.GetReplyWindow();
+  HWND get replyWindow => GetReplyWindow();
 
   @override
-  set replyID(int dwId) => _.SetReplyID(dwId);
+  set replyID(int dwId) => SetReplyID(dwId);
   @override
-  int get replyID => _.GetReplyID();
+  int get replyID => GetReplyID();
 
   @override
-  set sort(EverythingSort sortType) => _.SetSort(sortType.val);
+  set sort(EverythingSort sortType) => SetSort(sortType.val);
   @override
-  EverythingSort get sort => EverythingSort.fromVal(_.GetSort());
+  EverythingSort get sort => EverythingSort.fromVal(GetSort());
 
   @override
-  set requestFlags(RequestFlags flags) => _.SetRequestFlags(flags.flags);
+  set requestFlags(RequestFlags flags) => SetRequestFlags(flags.flags);
   @override
-  RequestFlags get requestFlags => RequestFlags.fromFlags(_.GetRequestFlags());
+  RequestFlags get requestFlags => RequestFlags.fromFlags(GetRequestFlags());
 
   @override
-  bool query(bool wait) => _.QueryW(wait.toInt) != 0;
+  bool query(bool wait) => QueryW(wait.toInt) != 0;
 
   @override
   bool isQueryReply(int message, int wParam, int lParam, int dwId) =>
-      _.IsQueryReply(message, wParam, lParam, dwId) != 0;
+      IsQueryReply(message, wParam, lParam, dwId) != 0;
 
   @override
-  void sortResultsByPath() => _.SortResultsByPath();
+  void sortResultsByPath() => SortResultsByPath();
   /* get result num */
   @override
-  int get numFileResults => _.GetNumFileResults();
+  int get numFileResults => GetNumFileResults();
   @override
-  int get numFolderResults => _.GetNumFolderResults();
+  int get numFolderResults => GetNumFolderResults();
   @override
-  int get numResults => _.GetNumResults();
+  int get numResults => GetNumResults();
 
   @override
-  int get totFileResults => _.GetTotFileResults();
+  int get totFileResults => GetTotFileResults();
   @override
-  int get totFolderResults => _.GetTotFolderResults();
+  int get totFolderResults => GetTotFolderResults();
   @override
-  int get totResults => _.GetTotResults();
+  int get totResults => GetTotResults();
   /* get result info */
   @override
   EverythingSort get resultListSort =>
-      EverythingSort.fromVal(_.GetResultListSort());
+      EverythingSort.fromVal(GetResultListSort());
   @override
   RequestFlags get resultListRequestFlags =>
-      RequestFlags.fromFlags(_.GetResultListRequestFlags());
+      RequestFlags.fromFlags(GetResultListRequestFlags());
   /* result item type */
   @override
-  bool isVolumeResult(int dwIndex) => _.IsVolumeResult(dwIndex) != 0;
+  bool isVolumeResult(int dwIndex) => IsVolumeResult(dwIndex) != 0;
   @override
-  bool isFolderResult(int dwIndex) => _.IsFolderResult(dwIndex) != 0;
+  bool isFolderResult(int dwIndex) => IsFolderResult(dwIndex) != 0;
   @override
-  bool isFileResult(int dwIndex) => _.IsFileResult(dwIndex) != 0;
+  bool isFileResult(int dwIndex) => IsFileResult(dwIndex) != 0;
   /* result item info */
   @override
   String getResultFileName(int dwIndex) =>
-      _.GetResultFileNameW(dwIndex).toDartString();
+      GetResultFileNameW(dwIndex).toDartString();
   @override
-  String getResultPath(int dwIndex) => _.GetResultPathW(dwIndex).toDartString();
+  String getResultPath(int dwIndex) => GetResultPathW(dwIndex).toDartString();
   @override
   String getResultFullPathName(
     int dwIndex, {
@@ -354,20 +205,20 @@ current:${Directory.current}
     ffi.Allocator allocator = malloc,
   }) {
     LPWSTR buf = allocator<WCHAR>(len + 1);
-    _.GetResultFullPathNameW(dwIndex, buf, len);
+    GetResultFullPathNameW(dwIndex, buf, len);
     final result = buf.toDartString();
-    malloc.free(buf);
+    allocator.free(buf);
     return result;
   }
 
   @override
   String getResultExtension(int dwIndex) =>
-      _.GetResultExtensionW(dwIndex).toDartString();
+      GetResultExtensionW(dwIndex).toDartString();
   @override
   int getResultSize(int dwIndex, {ffi.Allocator allocator = malloc}) {
     final lpSize = allocator<LARGE_INTEGER>();
-    final ret = _.GetResultSize(dwIndex, lpSize); //todo:
-    if (ret == 0) _checkLastError(lastError);
+    final ret = GetResultSize(dwIndex, lpSize);
+    if (ret == 0) _checkLastError(lastError, 'getResultSize');
     final size = lpSize.ref.QuadPart;
     allocator.free(lpSize);
     return size;
@@ -381,7 +232,7 @@ current:${Directory.current}
   }) {
     final lpDateCreated = allocator<FILETIME>();
     final ret = getFileTime(dwIndex, lpDateCreated);
-    if (ret == 0) _checkLastError(lastError);
+    if (ret == 0) _checkLastError(lastError, errorMessage);
     final time = lpDateCreated.ref;
     final datetime = time.utc;
     allocator.free(lpDateCreated);
@@ -392,104 +243,93 @@ current:${Directory.current}
   DateTime getResultDateCreated(
     int dwIndex, {
     ffi.Allocator allocator = malloc,
-  }) => _getFileTime(dwIndex, _.GetResultDateCreated, 'getResultDateCreated');
+  }) => _getFileTime(dwIndex, GetResultDateCreated, 'getResultDateCreated');
   @override
   DateTime getResultDateModified(
     int dwIndex, {
     ffi.Allocator allocator = malloc,
-  }) => _getFileTime(dwIndex, _.GetResultDateModified, 'getResultDateModified');
+  }) => _getFileTime(dwIndex, GetResultDateModified, 'getResultDateModified');
   @override
   DateTime getResultDateAccessed(
     int dwIndex, {
     ffi.Allocator allocator = malloc,
-  }) => _getFileTime(dwIndex, _.GetResultDateAccessed, 'getResultDateAccessed');
+  }) => _getFileTime(dwIndex, GetResultDateAccessed, 'getResultDateAccessed');
 
   @override
   FileAttribute getResultAttributes(int dwIndex) =>
-      FileAttribute(_.GetResultAttributes(dwIndex));
+      FileAttribute(GetResultAttributes(dwIndex));
   @override
   String getResultFileListFileName(int dwIndex) =>
-      _.GetResultFileListFileNameW(dwIndex).toDartString();
+      GetResultFileListFileNameW(dwIndex).toDartString();
   @override
-  int getResultRunCount(int dwIndex) => _.GetResultRunCount(dwIndex);
+  int getResultRunCount(int dwIndex) => GetResultRunCount(dwIndex);
 
   @override
   DateTime getResultDateRun(int dwIndex, {ffi.Allocator allocator = malloc}) =>
-      _getFileTime(dwIndex, _.GetResultDateRun, 'getResultDateRun');
+      _getFileTime(dwIndex, GetResultDateRun, 'getResultDateRun');
   @override
   DateTime getResultDateRecentlyChanged(
     int dwIndex, {
     ffi.Allocator allocator = malloc,
   }) => _getFileTime(
     dwIndex,
-    _.GetResultDateRecentlyChanged,
+    GetResultDateRecentlyChanged,
     'getResultDateRecentlyChanged',
   );
   @override
   String getResultHighlightedFileName(int dwIndex) =>
-      _.GetResultHighlightedFileNameW(dwIndex).toDartString();
+      GetResultHighlightedFileNameW(dwIndex).toDartString();
   @override
   String getResultHighlightedPath(int dwIndex) =>
-      _.GetResultHighlightedPathW(dwIndex).toDartString();
+      GetResultHighlightedPathW(dwIndex).toDartString();
   @override
   String getResultHighlightedFullPathAndFileName(int dwIndex) =>
-      _.GetResultHighlightedFullPathAndFileNameW(dwIndex).toDartString();
+      GetResultHighlightedFullPathAndFileNameW(dwIndex).toDartString();
   @override
-  int getRunCountFromFileName(String fileName) {
-    final str = fileName.toLPCWSTR();
-    final count = _.GetRunCountFromFileNameW(str);
-    malloc.free(str);
-    return count;
-  }
+  int getRunCountFromFileName(String fileName) =>
+      _withLpcwstr(fileName, GetRunCountFromFileNameW);
 
   @override
-  bool setRunCountFromFileName(String fileName, int count) {
-    final str = fileName.toLPCWSTR();
-    final ret = _.SetRunCountFromFileNameW(str, count);
-    malloc.free(str);
-    return ret != 0;
-  }
+  bool setRunCountFromFileName(String fileName, int count) =>
+      _withLpcwstr(fileName, (str) => SetRunCountFromFileNameW(str, count)) !=
+      0;
 
   @override
-  int incRunCountFromFileName(String fileName) {
-    final str = fileName.toLPCWSTR();
-    final ret = _.IncRunCountFromFileNameW(str);
-    malloc.free(str);
-    return ret;
-  }
+  int incRunCountFromFileName(String fileName) =>
+      _withLpcwstr(fileName, IncRunCountFromFileNameW);
 
   /*  */
   @override
-  void reset() => _.Reset();
+  void reset() => Reset();
   @override
-  void cleanUp() => _.CleanUp();
+  void cleanUp() => CleanUp();
   @override
-  bool exit() => _.Exit() != 0;
+  bool exit() => Exit() != 0;
   @override
   @Deprecated('no longer used, remove.')
   int msiExitAndStopService(ffi.Pointer<ffi.Void> msihandle) =>
-      _.MSIExitAndStopService(msihandle);
+      MSIExitAndStopService(msihandle);
   @override
   @Deprecated('no longer used, remove.')
   int msiStartService(ffi.Pointer<ffi.Void> msihandle) =>
-      _.MSIStartService(msihandle);
+      MSIStartService(msihandle);
   @override
-  bool isAdmin() => _.IsAdmin() != 0;
+  bool isAdmin() => IsAdmin() != 0;
   @override
-  bool isAppData() => _.IsAppData() != 0;
+  bool isAppData() => IsAppData() != 0;
   /* DB */
   @override
-  bool isDBLoaded() => _.IsDBLoaded() != 0;
+  bool isDBLoaded() => IsDBLoaded() != 0;
   @override
-  bool rebuildDB() => _.RebuildDB() != 0;
+  bool rebuildDB() => RebuildDB() != 0;
   @override
-  bool updateAllFolderIndexes() => _.UpdateAllFolderIndexes() != 0;
+  bool updateAllFolderIndexes() => UpdateAllFolderIndexes() != 0;
   @override
-  bool saveDB() => _.SaveDB() != 0;
+  bool saveDB() => SaveDB() != 0;
   @override
-  bool saveRunHistory() => _.SaveRunHistory() != 0;
+  bool saveRunHistory() => SaveRunHistory() != 0;
   @override
-  bool deleteRunHistory() => _.DeleteRunHistory() != 0;
+  bool deleteRunHistory() => DeleteRunHistory() != 0;
 
   /* utils */
 

@@ -9,22 +9,21 @@ A package that wraps [![](https://www.voidtools.com/favicon.ico) Everything SDK]
 
 ## Getting started
 
-`dart pub add everything_search_engine`
+Run:
+
+```sh
+dart pub add everything_search_engine
+```
+
+Then create the wrapper directly:
 
 ```dart
-import 'package:everything_search_engine/everything.dart';
+import 'package:everything_search_engine/everything_search_engine.dart';
 
-/// `await Everything.ensureInited()` must be called before `Everything.fromDefaultLibraryPath()` unless you use your own dll library
-await Everything.ensureInited();
-Everything everything = Everything.fromDefaultLibraryPath();
+final everything = const Everything();
 ```
 
-add flutter asset in `pubspec.yaml` if you are using `flutter` or `flutter_test`
-```yaml
-flutter:
-  assets:
-    - packages/everything_search_engine/src/dll/Everything64.dll
-```
+No manual DLL initialization or Flutter asset copying is required.
 
 ## Usage
 
@@ -33,10 +32,7 @@ flutter:
 import 'package:everything_search_engine/everything_search_engine.dart';
 
 Future<void> main() async {
-  /// `await Everything.ensureInited()` must be called before `Everything.fromDefaultLibraryPath()` unless you use your own dll library
-  await Everything.ensureInited();
-
-  final everything = Everything.fromDefaultLibraryPath();
+  final everything = const Everything();
 
   final results = everything.runQuery(
     const Query(
