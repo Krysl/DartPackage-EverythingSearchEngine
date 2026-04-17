@@ -1,4 +1,4 @@
-import 'package:win32/win32.dart';
+import 'file_attribute_constants.dart';
 
 /// https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
 extension type const FileAttribute(int _) implements int {

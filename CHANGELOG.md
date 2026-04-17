@@ -1,4 +1,4 @@
-## 0.3.0
+## 0.3.0-beta.1
 * switch native DLL integration to Dart native assets using hooks and code_assets
   * runtime loading no longer depends on manual path initialization or DLL copying
   * simplify the public entry point to direct construction with Everything()
